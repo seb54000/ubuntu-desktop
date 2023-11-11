@@ -1,0 +1,83 @@
+TO remove later
+
+
+install ISO with cloud init
+https://askubuntu.com/questions/1236317/how-do-i-create-a-ubuntu-focal-auto-install-server-iso-image
+
+https://ubuntu.com/server/docs/install/autoinstall
+
+
+first install from windows, use rufus and ISO 23.04 desktop
+create image then reboot on USB stick
+
+
+TODOs later
+- use grub or linux boolaoder instead of windows boot manager ?
+https://askubuntu.com/questions/86979/grub-or-windows-bootloader-for-dual-boot
+
+How windows boot manager works ?
+Can we get completely rid of it
+How to reinstall windows if we completely wipe all the disks and only create partitions without windows and without boot manager 
+
+
+
+======================================
+Software and config after install
+- set screen resolution
+- google account at ubuntu level ? (permit GNOME to access google)
+- chrome download + install : sudo dpkg -i .deb
+   - setup google synchronization
+- install vscode (via snap)
+   - connect / clone github repo ubuntu-desktop
+- sudo apt install git
+
+sudo snap install htop
+
+
+git clone https://github.com/seb54000/ubuntu-desktop.git
+
+- setup my user with SUDO privileges (NOPASSWD)
+   - il faut commenter la ligne donnant des droits au groupe sudo et ajoutez l'autre
+#%sudo  ALL=(ALL:ALL) ALL
+%sudo  ALL=(ALL) NOPASSWD: ALL
+https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L15C1-L16C1
+
+- ajouter google chrome comme favoris dans le deck (enlever firefox, thuderburd, ...)
+
+- changer les règles de password
+sudo vi /etc/pam.d/common-password 
+# password      requisite                       pam_pwquality.so retry=3
+# password      [success=2 default=ignore]      pam_unix.so obscure use_authtok try_first_pass yescrypt
+password    [success=1 default=ignore]  pam_unix.so minlen=1 sha512
+# password      sufficient                      pam_sss.so use_authtok
+- créer un user par enfant
+    source .env
+   sudo useradd -m -s /bin/bash ${USERNAME_THEO}
+   echo "${USERNAME_THEO}:${PASSWORD_THEO}" | sudo chpasswd
+- installer proxy squid avec des règles limitant l'accès à internet
+- ne pas avoir les droits sudo pour les enfants
+- installer une suite office pour les enfants
+- vérifier que l'impression est possible
+- limiter les programmes qui peuven t être lancés 
+- voir comment faire la conf de base à l'ouverture de session pour GNOME (éviter de demander le paramétrage d'un compte google, savoir si on veut envoyer les infos, etc...)
+
+- outil de capture d'écran
+   il suffit d'appuyer sur imprim ecran et ça lance l'utilitaire
+- office writer est déjà intallé
+
+
+
+
+
+
+
+
+
+- keepass for sharing secrets 
+   - dashlane alternatives ??? 
+      - bitwarden ??   Ask Romain 
+   - https://superuser.com/questions/44028/best-way-to-share-certain-passwords-stored-in-keepass
+sudo apt install -y keepassxc
+
+
+- restore session tools at startup (even after shutdown) - see in tf-ami 

@@ -1,0 +1,8 @@
+[Unit]
+Description=Allow or remove access
+
+[Service]
+ExecStart=/usr/bin/access_service.sh
+
+[Install]
+WantedBy=multi-user.target
