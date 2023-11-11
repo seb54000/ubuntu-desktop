@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# TODO check if .env file do not exists, stop (as we will have problem later like removing of credentials in smb credentials)
+source .env
+
+echo "Manage sudo rights for seb user"
+[ -f /etc/sudoers.d/seb ] || echo "seb ALL=(ALL) NOPASSWD:ALL" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/seb')
+
+
+echo "install Vscode"
+sudo snap install code --classic
+
+# TODO open current folder in VScode with accepting / trusting 
+
+echo "Install VLC client"
+sudo snap install vlc
+
+
 echo "Install and setup access_service"
 
 sudo cp access_service/access_service.sh /usr/bin/access_service.sh
@@ -14,7 +30,7 @@ echo "Install and setup Squid Proxy + config users"
 # https://webhostinggeeks.com/howto/how-to-configure-squid-proxy-server-for-parental-controls/#:~:text=You%20can%20configure%20Squid%20for,internet%20access%20during%20certain%20hours.
 # https://doc.ubuntu-fr.org/tutoriel/comment_mettre_en_place_un_controle_parental
 
-sudo apt-get install squidguard
+sudo apt-get install -y squidguard
 sudo cp /etc/squidguard/squidGuard.conf /etc/squidguard/squidGuard.conf.orig
 sudo cp squid/squidguard.conf /etc/squidguard/squidGuard.conf
 # wget https://steelmon.files.wordpress.com/2010/12/getlists.odt
@@ -119,7 +135,7 @@ echo "set automount at startup fetaures"
 # Note the very interesting usage of credentials file to avoid putting everything in the fstab file
 
 
-sudo apt-get install cifs-utils
+sudo apt-get install -y cifs-utils
 # Create a smb credentials file with limited access
 cat <<EOF > /var/tmp/.doux.smb.credentials
 username=${DOUX_SMB_USERNAME}
