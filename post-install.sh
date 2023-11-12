@@ -1,5 +1,23 @@
 #!/bin/bash
 
+set -e
+
+handle_error() {
+  echo "An error occurred. Exiting."
+  cleanup
+  exit 1
+}
+
+cleanup() {
+    echo “Performing cleanup tasks…”
+    # Your cleanup logic here
+}
+
+trap handle_error ERR
+trap cleanup EXIT
+
+
+
 # TODO check if .env file do not exists, stop (as we will have problem later like removing of credentials in smb credentials)
 source .env
 
@@ -45,18 +63,6 @@ sudo chmod +x /usr/local/bin/getlists.sh
 sudo getlists.sh
 # ls -l /var/lib/squidguard/db/blacklists/
 
-# TODO investigate the getlists script ???
-# tar: blacklists/porn: Cannot create symlink to ‘adult’: File exists
-# blacklists/proxy
-# tar: Exiting with failure status due to previous errors
-
-# TO SEE LATER how to improve but it is due to these lines for new adult blacklist from toulous
-# tar -C ${BLKDIRADLT} -xvzf ${BLACKDIR}/${UNIQUEDT}_fr.tar.gz
-# perl -pi -e "s#^\-##g" ${BLKDIRADLT}/adult/domains
-# perl -pi -e "s#^\-##g" ${BLKDIRADLT}/adult/urls
-
-#  Compile SquidGuard DB (for reminder as already in getlists.sh)
-# sudo squidGuard -C all
 
 # Set a cron (3 in the morning ??? are you sure for a desktop) to update the blacklist
 # Should find someting like on MacOS to launch the job at startup if it had not run for a while
@@ -73,15 +79,21 @@ systemctl is-enabled squid
 
 # TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
+echo -e 'www.google.fr\nwww.tiktok.com\ntiktok.com' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
+sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
+sudo systemctl reload squid
+# sudo chmod 666 /var/log/squid/squidGuard.log 
 
-echo 'www.google.fr' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 https_proxy=http://localhost:3128 curl https://www.google.fr
 
-sudo systemctl reload squid
 
 # cat /var/log/squidguard/suidgard.log
 https_proxy=http://localhost:3128 curl -kv https://xhamster.com
+
+echo “https://xhamster.com / - - GET” | sudo squidGuard -c /etc/squidguard/squidGuard.conf -d
+
+# https://michauko.org/blog/squidguard-filtre-durl-et-listes-a-jour-le-plus-dur-313/
 
 
 # CHROMIUM
@@ -111,6 +123,7 @@ set_gsettings () {
     
 }
 set_gsettings theo
+set_gsettings leo
 
 
 # gsettings very powerful to set gnome settings by command line
@@ -272,12 +285,22 @@ if [ ${DESKTOP_INSTALL} == "1" ]; then
 
     # Accept the key for connexion in authorized_keys
     echo ${UBUNTU_DESKTOP_DOUX_KEY} > /home/seb/.ssh/authorized_keys
+
 fi
 
+echo "Install Remmina"
+sudo apt-add-repository -y ppa:remmina-ppa-team/remmina-next
+sudo apt update -y
+sudo apt install -y remmina remmina-plugin-rdp remmina-plugin-secret
 
-echo "install XRDP"
+# TODO add remmina in favorites in GNOME
 
-sudo apt install xrdp -y
-sudo systemctl enable xrdp
-# sudo usermod -a -G ssl-cert xrdp
-sudo systemctl restart xrdp
+if [ ${DESKTOP_INSTALL} == "1" ]; then
+
+    echo "install XRDP"
+
+    sudo apt install xrdp -y
+    sudo systemctl enable xrdp
+    # sudo usermod -a -G ssl-cert xrdp
+    sudo systemctl restart xrdp
+fi
