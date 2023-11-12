@@ -84,12 +84,14 @@ echo "Blacklist Line Counts for "${DATETIME} \
 
 #CHANGED
 #Original download:
-wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_sg.tar.gz \
-  ftp://ftp.univ-tlse1.fr/pub/reseau/cache/squidguard_contrib/blacklists.tar.gz
+# wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_sg.tar.gz \
+#   ftp://ftp.univ-tlse1.fr/pub/reseau/cache/squidguard_contrib/blacklists.tar.gz
 
 #wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_sg.tar.gz \
 #  http://squidguard.mesd.k12.or.us/blacklists.tgz
 
+wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_sg.tar.gz \
+https://dsi.ut-capitole.fr/blacklists/download/blacklists.tar.gz
 
 #
 # Download the latest adult.tar.gz file from the
@@ -108,8 +110,8 @@ wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_sg.tar.gz \
 # wget --passive-ftp --output-document=${BLACKDIR}/${UNIQUEDT}_fr.tar.gz \
 #
 
-wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_fr.tar.gz \
-  ftp://ftp.univ-tlse1.fr/pub/reseau/cache/squidguard_contrib/adult.tar.gz
+# wget ${WGOPTS} --output-document=${BLACKDIR}/${UNIQUEDT}_fr.tar.gz \
+#   ftp://ftp.univ-tlse1.fr/pub/reseau/cache/squidguard_contrib/adult.tar.gz
 
 # --------------------------------------------------------------
 # Install the new squidguard blacklist

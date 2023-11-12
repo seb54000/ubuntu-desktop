@@ -36,24 +36,7 @@ sudo snap install htop
 
 git clone https://github.com/seb54000/ubuntu-desktop.git
 
-- setup my user with SUDO privileges (NOPASSWD)
-   - il faut commenter la ligne donnant des droits au groupe sudo et ajoutez l'autre
-#%sudo  ALL=(ALL:ALL) ALL
-%sudo  ALL=(ALL) NOPASSWD: ALL
-https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L15C1-L16C1
 
-- ajouter google chrome comme favoris dans le deck (enlever firefox, thuderburd, ...)
-
-- changer les règles de password
-sudo vi /etc/pam.d/common-password 
-# password      requisite                       pam_pwquality.so retry=3
-# password      [success=2 default=ignore]      pam_unix.so obscure use_authtok try_first_pass yescrypt
-password    [success=1 default=ignore]  pam_unix.so minlen=1 sha512
-# password      sufficient                      pam_sss.so use_authtok
-- créer un user par enfant
-    source .env
-   sudo useradd -m -s /bin/bash ${USERNAME_THEO}
-   echo "${USERNAME_THEO}:${PASSWORD_THEO}" | sudo chpasswd
 - installer proxy squid avec des règles limitant l'accès à internet
 - ne pas avoir les droits sudo pour les enfants
 - installer une suite office pour les enfants
@@ -67,9 +50,14 @@ password    [success=1 default=ignore]  pam_unix.so minlen=1 sha512
 
 
 
+- install Gdrive and set keepass
+   https://doc.ubuntu-fr.org/google_drive
+   https://doc.ubuntu-fr.org/rclone
 
 
-
+- install DropBox
+   https://doc.ubuntu-fr.org/application_dropbox
+   https://doc.ubuntu-fr.org/rclone
 
 
 
@@ -77,7 +65,39 @@ password    [success=1 default=ignore]  pam_unix.so minlen=1 sha512
    - dashlane alternatives ??? 
       - bitwarden ??   Ask Romain 
    - https://superuser.com/questions/44028/best-way-to-share-certain-passwords-stored-in-keepass
-sudo apt install -y keepassxc
+
 
 
 - restore session tools at startup (even after shutdown) - see in tf-ami 
+   AUTO startup but see also https://ubuntuhandbook.org/index.php/2023/01/save-restore-all-open-app-ubuntu/
+      https://www.howtogeek.com/203952/how-to-automatically-remember-running-applications-from-your-last-session-in-ubuntu-14.04/
+      https://askubuntu.com/questions/48321/how-do-i-start-applications-automatically-on-login
+
+
+- remove first config steps for user at first login
+   https://ossmalta.eu/how-to-disable-welcome-screen-first-login-dialog-in-ubuntu-22-04/
+
+
+   Set default applications (for video = VLC for instance)
+    - GUI : settings / default applications
+    - 
+    - https://help.gnome.org/admin/system-admin-guide/stable/mime-types-application-user.html.en
+
+Change default terminal for gnome
+gsettings list-recursively | grep -i terminal
+org.gnome.desktop.default-applications.terminal exec 'gnome-terminal'
+
+
+Turn on SYNC on google chrome
+
+
+openVPN configuration in order to connect when in REPAIX for instance
+
+
+SSH connexion to DESKTOP with a SSH key that we store in Keepass
+   - public key could be in git repo ?
+   - study the use of guacamole with docker in order to give access through simple browser
+   - install XRDP to share also the session and screen ?? (beware of multiple session for same user)
+
+Add a DNS records on OVH for DESKTOP (ease local RDP access)
+

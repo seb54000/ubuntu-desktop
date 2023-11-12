@@ -15,6 +15,10 @@ sudo snap install code --classic
 echo "Install VLC client"
 sudo snap install vlc
 
+echo "Install Google chrome"
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i ./google-chrome*.deb
+rm ./google-chrome*.deb
 
 echo "Install and setup access_service"
 
@@ -31,6 +35,7 @@ echo "Install and setup Squid Proxy + config users"
 # https://doc.ubuntu-fr.org/tutoriel/comment_mettre_en_place_un_controle_parental
 
 sudo apt-get install -y squidguard
+# Blacklist DL : https://dsi.ut-capitole.fr/blacklists/download/
 sudo cp /etc/squidguard/squidGuard.conf /etc/squidguard/squidGuard.conf.orig
 sudo cp squid/squidguard.conf /etc/squidguard/squidGuard.conf
 # wget https://steelmon.files.wordpress.com/2010/12/getlists.odt
@@ -50,10 +55,8 @@ sudo getlists.sh
 # perl -pi -e "s#^\-##g" ${BLKDIRADLT}/adult/domains
 # perl -pi -e "s#^\-##g" ${BLKDIRADLT}/adult/urls
 
-
-
-#  Compile SquidGuard DB
-sudo squidGuard -C all
+#  Compile SquidGuard DB (for reminder as already in getlists.sh)
+# sudo squidGuard -C all
 
 # Set a cron (3 in the morning ??? are you sure for a desktop) to update the blacklist
 # Should find someting like on MacOS to launch the job at startup if it had not run for a while
@@ -64,15 +67,16 @@ sudo snap install curl
 # Check if systemd service is enabled
 systemctl is-enabled squid
 
-grep -qxF 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' /etc/squid/squid.conf || echo 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' | sudo tee -a /etc/squid/squid.conf > /dev/null
-grep -qxF 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' /etc/squid/squid.conf || echo 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' | sudo tee -a /etc/squid/squid.conf > /dev/null
-grep -qxF 'http_access deny bad_urls' /etc/squid/squid.conf || echo 'http_access deny bad_urls' | sudo tee -a /etc/squid/squid.conf > /dev/null
+# grep -qxF 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' /etc/squid/squid.conf || echo 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' | sudo tee -a /etc/squid/squid.conf > /dev/null
+# grep -qxF 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' /etc/squid/squid.conf || echo 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' | sudo tee -a /etc/squid/squid.conf > /dev/null
+# grep -qxF 'http_access deny bad_urls' /etc/squid/squid.conf || echo 'http_access deny bad_urls' | sudo tee -a /etc/squid/squid.conf > /dev/null
+
+# TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
+# sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
+sudo cp squid/squid.conf /etc/squid/squid.conf
 
 echo 'www.google.fr' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 https_proxy=http://localhost:3128 curl https://www.google.fr
-
-sudo systemctl reload squid
-
 
 sudo systemctl reload squid
 
@@ -143,9 +147,13 @@ password=${DOUX_SMB_PASSWORD}
 EOF
 sudo mv /var/tmp/.doux.smb.credentials /etc/.doux.smb.credentials
 sudo chmod 600 /etc/.doux.smb.credentials
+sudo chown root:root /etc/.doux.smb.credentials
 
 sudo mkdir -p /mnt/films
-grep -qF '//local.nas.multiseb.com/home/films' /etc/fstab || echo '//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8 0 0' | sudo tee -a /etc/fstab > /dev/null
+grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/doux
+grep -qF '/mnt/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+
 
 sudo mount -a
 
@@ -197,10 +205,79 @@ sudo cp /var/tmp/seb.gnome-network-displays.desktop /usr/share/applications/
 
 echo "DESKTOP only - install docker and transmission configuration (not on laptop)"
 
-# >Test variable présence DESKTOP_INSTALL=1 
+if [ ${DESKTOP_INSTALL} == "1" ]; then
+    sudo snap install docker
+    sudo groupadd docker
+    # sudo usermod -aG docker seb
+    sudo gpasswd -a seb docker 
+    sudo chmod 666 /var/run/docker.sock
+
+    docker run --cap-add=NET_ADMIN -d \
+    --restart unless-stopped \
+    --mount type=bind,source=/mnt/films/seedbox,target=/data \
+    --mount type=bind,source=/mnt/films/seedbox/config,target=/config \
+    --mount type=bind,source=/mnt/films/seedbox/ubuntu_seedbox_openvpn,target=/etc/openvpn/custom/ \
+    -e OPENVPN_PROVIDER=custom \
+    -e OPENVPN_CONFIG=openvpn \
+    -e OPENVPN_USERNAME=5DRFhMFyXF \
+    -e OPENVPN_PASSWORD=3tnyyYCf3Q \
+    -e DEBUG=true \
+    -p 9999:9091 \
+    -e LOCAL_NETWORK=192.168.0.0/16 \
+    --log-driver json-file \
+    --log-opt max-size=10m \
+    --name transmission-openvpn \
+    haugene/transmission-openvpn
+
+
+    docker run -d \
+      --restart unless-stopped \
+      --link transmission-openvpn:transmission \
+      -p 8080:8080 \
+      --name transmission-openvpn-proxy \
+      haugene/transmission-openvpn-proxy  
+
+
+fi
 
 
 
 echo "DESKTOP only - install KODI and configuration on NAS (not on laptop)"
 
+if [ ${DESKTOP_INSTALL} == "1" ]; then
+    sudo apt install -y kodi
+    # TODO for each user 
+    mkdir -p /home/seb/.kodi
+    # fstab line with uid / gid
+    grep -qF '/home/seb/.kodi' /etc/fstab || echo "//local.nas.multiseb.com/home/films/kodi_datas /home/seb/.kodi cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+    # https://kodi.wiki/view/Kodi_data_folder
+fi
 
+
+echo "Install Keepass and launch with a shared DB on NAS"
+sudo apt install -y keepassxc
+    # TODO add keepass to favorites in GNOME
+    # TODO need an rsync with google drive
+
+    # Keepass is ubuntu_keepass in /mnt/doux
+    # https://www.padok.fr/en/blog/ssh-keys-keepassxc
+
+if [ ${DESKTOP_INSTALL} == "1" ]; then
+    echo "Install SSH"
+    # Only available through locla network as firewaal on freebox do not forward port
+    sudo apt install ssh -y
+
+    # Generate a key and back it up in the keepass
+    # ssh-keygen -C ubuntu-desktop-doux-key
+
+    # Accept the key for connexion in authorized_keys
+    echo ${UBUNTU_DESKTOP_DOUX_KEY} > /home/seb/.ssh/authorized_keys
+fi
+
+
+echo "install XRDP"
+
+sudo apt install xrdp -y
+sudo systemctl enable xrdp
+# sudo usermod -a -G ssl-cert xrdp
+sudo systemctl restart xrdp
