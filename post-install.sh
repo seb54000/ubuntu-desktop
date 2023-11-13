@@ -4,7 +4,6 @@ set -e
 
 handle_error() {
   echo "An error occurred. Exiting."
-  cleanup
   exit 1
 }
 
@@ -21,6 +20,8 @@ trap cleanup EXIT
 # TODO check if .env file do not exists, stop (as we will have problem later like removing of credentials in smb credentials)
 source .env
 
+set -x
+
 echo "Manage sudo rights for seb user"
 [ -f /etc/sudoers.d/seb ] || echo "seb ALL=(ALL) NOPASSWD:ALL" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/seb')
 
@@ -34,9 +35,10 @@ echo "Install VLC client"
 sudo snap install vlc
 
 echo "Install Google chrome"
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i ./google-chrome*.deb
-rm ./google-chrome*.deb
+[ -f /usr/bin/google-chrome ] || \
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    sudo dpkg -i ./google-chrome*.deb && \
+    rm ./google-chrome*.deb
 
 echo "Install and setup access_service"
 
@@ -60,7 +62,7 @@ sudo cp squid/squidguard.conf /etc/squidguard/squidGuard.conf
 sudo cp squid/getlists.sh  /usr/local/bin/getlists.sh
 sudo chmod +x /usr/local/bin/getlists.sh
 
-sudo getlists.sh
+# sudo getlists.sh
 # ls -l /var/lib/squidguard/db/blacklists/
 
 
@@ -85,13 +87,10 @@ sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
 sudo systemctl reload squid
 # sudo chmod 666 /var/log/squid/squidGuard.log 
 
-https_proxy=http://localhost:3128 curl https://www.google.fr
-
-
-# cat /var/log/squidguard/suidgard.log
-https_proxy=http://localhost:3128 curl -kv https://xhamster.com
-
-echo “https://xhamster.com / - - GET” | sudo squidGuard -c /etc/squidguard/squidGuard.conf -d
+# https_proxy=http://localhost:3128 curl https://www.google.fr
+# # cat /var/log/squidguard/suidgard.log
+# https_proxy=http://localhost:3128 curl -kv https://xhamster.com
+# echo “https://xhamster.com / - - GET” | sudo squidGuard -c /etc/squidguard/squidGuard.conf -d
 
 # https://michauko.org/blog/squidguard-filtre-durl-et-listes-a-jour-le-plus-dur-313/
 
@@ -105,6 +104,9 @@ echo "Create users and GNOME session settings + browser"
 set_gsettings () {
     USERNAME=$1
     LOCAL_UID=$(id -u ${USERNAME})
+
+
+    # sudo -u theo dbus-launch gsetting set org.gnome.system.proxy.http host localhost
 
     # Proxy
     sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy mode 'manual'"
@@ -166,7 +168,10 @@ sudo mkdir -p /mnt/films
 grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
 sudo mkdir -p /mnt/doux
 grep -qF '/mnt/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-
+# sudo mkdir -p /mnt/theo_home_dir
+grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+# sudo mkdir -p /mnt/leo_home_dir
+grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
 
 sudo mount -a
 
