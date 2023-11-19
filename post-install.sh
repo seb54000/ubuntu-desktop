@@ -157,7 +157,6 @@ echo "Auto startup programs in GNOME session + dock customization and shortcuts"
 
 # https://linuxconfig.org/how-to-customize-dock-panel-on-ubuntu-22-04-jammy-jellyfish-linux
 
-geegie
 # AUTOSTART
 # https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L123
 
@@ -350,27 +349,32 @@ sudo apt install -y exiftool
 # https://github.com/GNOME/gthumb/tree/master
 # TODO Define custom filter in browser view for rating - 
 
-# TODO add bookmark through command line (for /mnt/triphotos)
- cat $hOME/.config/gthumb/bookmarks.xbel 
-seb@seb-KLVC-WXX9:~/ubuntu-desktop$ cat ../.config/gthumb/bookmarks.xbel 
-<?xml version="1.0" encoding="UTF-8"?>
-<xbel version="1.0"
-      xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
-      xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
->
-  <bookmark href="file:///mnt/doux/Drive/Moments/2022/02" added="2023-11-19T12:12:28.718878Z" modified="2023-11-19T12:12:28.718893Z" visited="2023-11-19T12:12:28.718881Z">
-    <info>
-      <metadata owner="http://freedesktop.org">
-        <bookmark:applications>
-          <bookmark:application name="gThumb" exec="&apos;gthumb %u&apos;" modified="2023-11-19T12:12:28.718888Z" count="1"/>
-        </bookmark:applications>
-        <bookmark:private/>
-      </metadata>
-    </info>
-  </bookmark>
+# # TODO add bookmark through command line (for /mnt/triphotos)
+#  cat $hOME/.config/gthumb/bookmarks.xbel 
+# seb@seb-KLVC-WXX9:~/ubuntu-desktop$ cat ../.config/gthumb/bookmarks.xbel 
+# <?xml version="1.0" encoding="UTF-8"?>
+# <xbel version="1.0"
+#       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
+#       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
+# >
+#   <bookmark href="file:///mnt/doux/Drive/Moments/2022/02" added="2023-11-19T12:12:28.718878Z" modified="2023-11-19T12:12:28.718893Z" visited="2023-11-19T12:12:28.718881Z">
+#     <info>
+#       <metadata owner="http://freedesktop.org">
+#         <bookmark:applications>
+#           <bookmark:application name="gThumb" exec="&apos;gthumb %u&apos;" modified="2023-11-19T12:12:28.718888Z" count="1"/>
+#         </bookmark:applications>
+#         <bookmark:private/>
+#       </metadata>
+#     </info>
+#   </bookmark>
 
 echo "Install dropbox with double install"
 # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
+mkdir -p "$HOME"/.dropbox-carole
+
+# TO configure /start : export HOME="$HOME/.dropbox-carole" && /usr/bin/dropbox start -i
+# WARNING seems it doesn't work when command is launched from vscode terminal...
+
 
 sudo apt install -y nautilus-dropbox
 #  /usr/bin/dropbox start -i
@@ -379,3 +383,21 @@ sudo apt install -y nautilus-dropbox
 echo "INstalling WhatsApp" 
 # https://github.com/eneshecan/whatsapp-for-linux
 sudo snap install whatsapp-for-linux
+
+echo "Define favorites for seb user"
+
+export APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'org.remmina.Remmina.desktop', 'seb.gnome-network-displays.desktop', 'org.gnome.gThumb.desktop']"
+gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
+
+
+echo "installing gmail desktop app"
+sudo snap install gmail-desktop
+# TODO test thunderbird ?
+
+sudo snap install gnome-contacts
+# TODO manage synchronisation ??
+
+sudo snap install audacity
+sudo snap connect audacity:alsa
+
+sudo snap install teams-for-linux
