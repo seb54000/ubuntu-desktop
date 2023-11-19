@@ -34,7 +34,7 @@ echo "Create new user and modify password policy"
 sudo useradd -m -s /bin/bash ${USERNAME_THEO}
 echo "${USERNAME_THEO}:${PASSWORD_THEO}" | sudo chpasswd
 sudo useradd -m -s /bin/bash ${USERNAME_LEO}
-echo "${USERNAME_THEO}:${PASSWORD_LEO}" | sudo chpasswd
+echo "${USERNAME_LEO}:${PASSWORD_LEO}" | sudo chpasswd
 
 
 

@@ -52,12 +52,6 @@ git clone https://github.com/seb54000/ubuntu-desktop.git
 
 - install Gdrive and set keepass
    https://doc.ubuntu-fr.org/google_drive
-   https://doc.ubuntu-fr.org/rclone
-
-
-- install DropBox
-   https://doc.ubuntu-fr.org/application_dropbox
-   https://doc.ubuntu-fr.org/rclone
 
 
 
@@ -78,6 +72,9 @@ git clone https://github.com/seb54000/ubuntu-desktop.git
    https://ossmalta.eu/how-to-disable-welcome-screen-first-login-dialog-in-ubuntu-22-04/
 
 
+- install DropBox
+   https://doc.ubuntu-fr.org/application_dropbox
+   https://doc.ubuntu-fr.org/rclone
    Set default applications (for video = VLC for instance)
     - GUI : settings / default applications
     - 
@@ -89,7 +86,7 @@ org.gnome.desktop.default-applications.terminal exec 'gnome-terminal'
 
 
 Turn on SYNC on google chrome
-
+   in an automted way / command line
 
 openVPN configuration in order to connect when in REPAIX for instance
 
@@ -101,3 +98,39 @@ SSH connexion to DESKTOP with a SSH key that we store in Keepass
 
 Add a DNS records on OVH for DESKTOP (ease local RDP access)
 
+
+TIme machine equivalent in ubuntu
+https://chat.openai.com/c/fdafa55d-55b2-4de9-9ad4-9b142baae16d
+   dup / duplicity
+   timeshift -- snapshot facilitant la restore
+   rsync en plus pour certains répertoires
+      pas forcément besoin de tout sauvegarder d'ailleurs, il suffit d'un bon rsync avec des versions séparées sur les fichiers de datas mais pour le reste (install des softs, je dois être en mesure de facilmeent tout restaurer avec le script d'install)
+   voir également rclone qu permet de cpier vers des dropbox, gdrive, ...
+         https://doc.ubuntu-fr.org/rclone
+
+
+Mount Gdrive sur DEKSTOP comme sur laptop
+   gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+https://askubuntu.com/questions/1350137/mount-google-drive-automatically-at-startup-as-in-nautilus
+
+
+
+TODO snap error while using somme command line tools relating to GNOME
+example gio mount
+https://stackoverflow.com/questions/65349875/where-can-i-find-glibcxx-3-4-29
+seb@seb-KLVC-WXX9:~/ubuntu-desktop$ gio mount 
+/snap/core20/current/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib/x86_64-linux-gnu/libproxy.so.1)
+Failed to load module: /home/seb/snap/code/common/.cache/gio-modules/libgiolibproxy.so
+gio: No locations given
+
+
+Add shortcuts in nautllius in command line
+   /mnt/doux
+      https://forum.zorin.com/t/change-file-managers-nautilus-sidebar/12251
+      edit ~/.config/user-dirs.dirs and /etc/xdg/user-dirs.defaults
+
+      xdg-user-dirs-update --set XDG_NASDOUX_DIR "/mnt/doux"
+
+   Hiding some sidebar natulius shortcut -(like music)
+   https://www.reddit.com/r/gnome/comments/wh3p1r/why_cant_i_delete_default_bookmarks_in_nautilus/
+   https://www.freedesktop.org/wiki/Software/xdg-user-dirs/

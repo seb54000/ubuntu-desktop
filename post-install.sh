@@ -81,14 +81,16 @@ systemctl is-enabled squid
 
 # TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
-echo -e 'www.google.fr\nwww.tiktok.com\ntiktok.com' | sudo tee /etc/squid/bad_urls.acl > /dev/null
+echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
+sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
 sudo systemctl reload squid
 # sudo chmod 666 /var/log/squid/squidGuard.log 
 
 # https_proxy=http://localhost:3128 curl https://www.google.fr
 # # cat /var/log/squidguard/suidgard.log
+# https_proxy=http://localhost:3128 curl -kv https://scratch.mit.edu
 # https_proxy=http://localhost:3128 curl -kv https://xhamster.com
 # echo “https://xhamster.com / - - GET” | sudo squidGuard -c /etc/squidguard/squidGuard.conf -d
 
@@ -105,8 +107,17 @@ set_gsettings () {
     USERNAME=$1
     LOCAL_UID=$(id -u ${USERNAME})
 
-
     # sudo -u theo dbus-launch gsetting set org.gnome.system.proxy.http host localhost
+
+# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy mode manual
+# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.http host localhost
+# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.http port 3128
+# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.https host localhost
+# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.https port 3128
+# export APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
+# sudo -u leo dbus-launch gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
+# sudo -u leo dbus-launch gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
+
 
     # Proxy
     sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy mode 'manual'"
@@ -119,14 +130,16 @@ set_gsettings () {
     # Dock
     # Origin
     # ['firefox_firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop', 'google-chrome.desktop', 'code_code.desktop']
-    APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
+    APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
     sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.shell favorite-apps \"${APP_LIST}\""
     sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false"
     
 }
-set_gsettings theo
-set_gsettings leo
+# set_gsettings theo
+# set_gsettings leo
 
+# TODO avoid user to change proxy settings or network settings
+# https://askubuntu.com/questions/283142/how-can-i-restrict-users-fom-changing-network-settings-and-adding-new-connection
 
 # gsettings very powerful to set gnome settings by command line
 # https://manpages.ubuntu.com/manpages/trusty/en/man1/gsettings.1.html
@@ -144,7 +157,7 @@ echo "Auto startup programs in GNOME session + dock customization and shortcuts"
 
 # https://linuxconfig.org/how-to-customize-dock-panel-on-ubuntu-22-04-jammy-jellyfish-linux
 
-
+geegie
 # AUTOSTART
 # https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L123
 
@@ -160,18 +173,28 @@ cat <<EOF > /var/tmp/.doux.smb.credentials
 username=${DOUX_SMB_USERNAME}
 password=${DOUX_SMB_PASSWORD}
 EOF
+cat <<EOF > /var/tmp/.famille.smb.credentials
+username=${FAMILLE_SMB_USERNAME}
+password=${FAMILLE_SMB_PASSWORD}
+EOF
 sudo mv /var/tmp/.doux.smb.credentials /etc/.doux.smb.credentials
 sudo chmod 600 /etc/.doux.smb.credentials
 sudo chown root:root /etc/.doux.smb.credentials
+sudo mv /var/tmp/.famille.smb.credentials /etc/.famille.smb.credentials
+sudo chmod 600 /etc/.famille.smb.credentials
+sudo chown root:root /etc/.famille.smb.credentials
 
 sudo mkdir -p /mnt/films
 grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
 sudo mkdir -p /mnt/doux
 grep -qF '/mnt/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
 # sudo mkdir -p /mnt/theo_home_dir
-grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+# grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
 # sudo mkdir -p /mnt/leo_home_dir
-grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+# grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/triphotos
+grep -qF '/mnt/triphotos' /etc/fstab || echo "//local.nas.multiseb.com/home/Drive/Moments /mnt/triphotos cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+
 
 sudo mount -a
 
@@ -300,6 +323,12 @@ sudo apt install -y remmina remmina-plugin-rdp remmina-plugin-secret
 
 # TODO add remmina in favorites in GNOME
 
+# TODO create remmina config as command line
+# https://askubuntu.com/questions/1374673/add-a-rdp-remmina-host-by-command-line
+
+# TODO debug RDP isntll for desktop
+# https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
+
 if [ ${DESKTOP_INSTALL} == "1" ]; then
 
     echo "install XRDP"
@@ -309,3 +338,44 @@ if [ ${DESKTOP_INSTALL} == "1" ]; then
     # sudo usermod -a -G ssl-cert xrdp
     sudo systemctl restart xrdp
 fi
+
+
+echo "install Gthumb"
+sudo apt install -y gthumb
+sudo apt install -y exiftool
+
+# TODO add gthumb in favorites in GNOME
+# TODO manage rating shortcuts with custom actions laucnhing exiftool script
+# https://gitlab.gnome.org/GNOME/gthumb/-/issues/82
+# https://github.com/GNOME/gthumb/tree/master
+# TODO Define custom filter in browser view for rating - 
+
+# TODO add bookmark through command line (for /mnt/triphotos)
+ cat $hOME/.config/gthumb/bookmarks.xbel 
+seb@seb-KLVC-WXX9:~/ubuntu-desktop$ cat ../.config/gthumb/bookmarks.xbel 
+<?xml version="1.0" encoding="UTF-8"?>
+<xbel version="1.0"
+      xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
+      xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
+>
+  <bookmark href="file:///mnt/doux/Drive/Moments/2022/02" added="2023-11-19T12:12:28.718878Z" modified="2023-11-19T12:12:28.718893Z" visited="2023-11-19T12:12:28.718881Z">
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:applications>
+          <bookmark:application name="gThumb" exec="&apos;gthumb %u&apos;" modified="2023-11-19T12:12:28.718888Z" count="1"/>
+        </bookmark:applications>
+        <bookmark:private/>
+      </metadata>
+    </info>
+  </bookmark>
+
+echo "Install dropbox with double install"
+# https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
+
+sudo apt install -y nautilus-dropbox
+#  /usr/bin/dropbox start -i
+
+
+echo "INstalling WhatsApp" 
+# https://github.com/eneshecan/whatsapp-for-linux
+sudo snap install whatsapp-for-linux

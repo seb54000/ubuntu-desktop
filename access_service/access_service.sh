@@ -41,13 +41,16 @@ do
         if [ $CONTENT == "1" ]; then
             log "Online, value=1, will allow access"
             allow_access theo
+            allow_access leo
         else
             log "Online, value=0 or != from 1, will remove access and kill session if already started"
             remove_access theo
+            remove_access leo
         fi
     else
         log "Offline (no internent access), we prefer remove access"
         remove_access theo
+        remove_access leo
     fi
     sleep 30
 done
