@@ -81,7 +81,7 @@ systemctl is-enabled squid
 
 # TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
-echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu' | sudo tee /etc/squid/bad_urls.acl > /dev/null
+echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.co' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
 sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
@@ -401,3 +401,21 @@ sudo snap install audacity
 sudo snap connect audacity:alsa
 
 sudo snap install teams-for-linux
+
+echo "INstalling import photos scripts"
+
+sudo apt-get -y install msmtp
+envsubst < import_photos/msmtp.conf > /var/tmp/msmtp.conf.subst
+sudo mv /var/tmp/msmtp.conf.subst /etc/msmtprc
+sudo chown root:root /etc/msmtprc
+sudo chmod 600 /etc/msmtprc
+
+
+sudo cp import_photos/import-photos.sh  /usr/local/bin/import-photos.sh
+sudo chmod +x /usr/local/bin/import-photos.sh
+sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
+sudo chmod +x /usr/local/bin/import-photos-mail.sh
+
+
+sudo grep -qF 'import-photos-mail.sh' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/import-photos-mail.sh") | crontab -
+sudo grep -qF 'reboot' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/import-photos-mail.sh") | crontab -

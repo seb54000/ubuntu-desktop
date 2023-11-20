@@ -8,7 +8,7 @@
 
 
 
-LOG_FILE="/Users/doux/Documents/Dev-tools-utils-projects/scripts/import-photos-mail.output.log"
+LOG_FILE="/var/tmp/import-photos-mail.output.log"
 TEMP_RESULT_FILE="/tmp/import-photos-mail-temp-results.txt"
 
 DATE=`date`
@@ -20,7 +20,7 @@ echo "$DATE" >> $LOG_FILE
 # Redirect stodut to file then redirect stderr to stdout
 # https://stackoverflow.com/questions/314675/how-do-i-redirect-the-output-of-an-entire-shell-script-within-the-script-itself/314678
 exec >$TEMP_RESULT_FILE 2>&1
-/Users/doux/Documents/Dev-tools-utils-projects/scripts/import-photos.sh
+import-photos.sh
 
 
 
@@ -28,17 +28,22 @@ echo "Running... results below " >> $LOG_FILE
 cat $TEMP_RESULT_FILE | grep -v 'Building file list' | grep -v 'Progress ' >> $LOG_FILE
 
 echo "Sending result via email to seb54000@gmail.com" >> $LOG_FILE
-cat $TEMP_RESULT_FILE | grep -v 'Building file list' | grep -v 'Progress ' | /usr/bin/mail -s "import photos job report" "seb54000@gmail.com" >> $LOG_FILE
+TMP_WORKFILE=$(mktemp)
+echo -e "Subject: import photos job report\n\n" > $TMP_WORKFILE
+cat $TEMP_RESULT_FILE | grep -v 'Building file list' | grep -v 'Progress ' >> $TMP_WORKFILE
+cat $TMP_WORKFILE | sudo msmtp seb54000@gmail.com >> $LOG_FILE
+rm -f $TMP_WORKFILE
 
 
 DAY_IN_WEEK=$(date +%w)
 if [ $DAY_IN_WEEK -eq 4 ]
 then
     echo "Sending reminder email : launch dropbox on iPhone to synchronize photos and videos to seb54000@gmail.com , carole" >> $LOG_FILE
-    echo "REMINDER : Launch dropbox to synchronize photos and videos" | /usr/bin/mail -s "REMINDER : Launch dropbox to synchronize photos and videos" "seb54000@gmail.com" >> $LOG_FILE
-    echo "REMINDER : Launch dropbox to synchronize photos and videos" | /usr/bin/mail -s "REMINDER : Launch dropbox to synchronize photos and videos" "carolegrandidier@gmail.com" >> $LOG_FILE
+    echo -e "Subject:REMINDER : Launch dropbox to synchronize photos and videos\n\nREMINDER : Launch dropbox to synchronize photos and videos" | sudo msmtp seb54000@gmail.com >> $LOG_FILE
+    echo -e "Subject:REMINDER : Launch dropbox to synchronize photos and videos\n\nREMINDER : Launch dropbox to synchronize photos and videos" | sudo msmtp carolegrandidier@gmail.com >> $LOG_FILE
 fi
 
+# rm $TEMP_RESULT_FILE
 
 # mail seems to work only with this in plist file : https://discussions.apple.com/thread/2523408
 #  <key>AbandonProcessGroup</key>

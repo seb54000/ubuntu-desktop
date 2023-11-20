@@ -113,6 +113,13 @@ Mount Gdrive sur DEKSTOP comme sur laptop
    gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
 https://askubuntu.com/questions/1350137/mount-google-drive-automatically-at-startup-as-in-nautilus
 
+   --> voir aussi s'il ne suffit pas cocher le drive/folder dans online accounts
+
+
+AUtomatiser la mise à jour des définitions squidguard
+   envisager aussi de les partager sur le nas pour ne pas avoir besoin de les mettre à jour partout 
+   Voir si le proxy pourrait être configuré sur le NAS justement plutôt que sur chaque machine ??
+
 
 
 TODO snap error while using somme command line tools relating to GNOME
@@ -122,6 +129,8 @@ seb@seb-KLVC-WXX9:~/ubuntu-desktop$ gio mount
 /snap/core20/current/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib/x86_64-linux-gnu/libproxy.so.1)
 Failed to load module: /home/seb/snap/code/common/.cache/gio-modules/libgiolibproxy.so
 gio: No locations given
+
+A priori lié au fait de lancer la commande depuis un terminal VScode, à tester extensivement mais si on le fait depuis un terminal normal, il n'y a pas d'erreur...
 
 
 Add shortcuts in nautllius in command line
@@ -151,4 +160,3 @@ Add shortcuts in nautllius in command line
    MuseScore
    Ledger live (bitcoin)
    VVV (catalog CD software)
-   

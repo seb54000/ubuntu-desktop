@@ -54,22 +54,22 @@ PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
 WARNING_ON_EXEC=0
 
 # Pour les espaces dans les variables, c'est soit TEST="Mon espace" soit TEST=Mon\ espace
-NAS_MOUNT_POINT="/mnt/nas/doux"
+NAS_MOUNT_POINT="/mnt/doux"
 #SOURCE DIRS
-PHOTOS_VIDEOS_SOURCE_DIR_SEB="/Volumes/Macintosh HD/Users/doux/Dropbox/Chargements appareil photo/"
-PHOTOS_VIDEOS_SOURCE_DIR_CAR="/Volumes/Macintosh HD/Users/doux/Dropbox-personal/Dropbox/Chargements appareil photo/"
+PHOTOS_VIDEOS_SOURCE_DIR_SEB="/home/seb/Dropbox/Chargements appareil photo/"
+PHOTOS_VIDEOS_SOURCE_DIR_CAR="/home/seb/.dropbox-carole/Dropbox/Chargements appareil photo/"
 PHOTOS_VIDEOS_SOURCE_TEMP_DIR_SEB="${PHOTOS_VIDEOS_SOURCE_DIR_SEB}rsynctemp/"
 PHOTOS_VIDEOS_SOURCE_TEMP_DIR_CAR="${PHOTOS_VIDEOS_SOURCE_DIR_CAR}rsynctemp/"
 
 #WORK DIRS
-PHOTOS_WORK_DIR_SEB="/Volumes/Macintosh HD/Users/doux/Documents/Photos/tempSEB/"
-PHOTOS_WORK_DIR_CAR="/Volumes/Macintosh HD/Users/doux/Documents/Photos/tempCAR/"
+PHOTOS_WORK_DIR_SEB="/home/seb/Documents/Photos/tempSEB/"
+PHOTOS_WORK_DIR_CAR="/home/seb/Documents/Photos/tempCAR/"
 VIDEOS_WORK_DIR_SEB="${NAS_MOUNT_POINT}/Videos librairie/tempSEB/"
 VIDEOS_WORK_DIR_CAR="${NAS_MOUNT_POINT}/Videos librairie/tempCAR/"
 
 #TARGET DIRS (Libraries)
 #GLOBAL_PHOTOS_LIBRARY="/Volumes/Macintosh HD/Users/Shared/partage/Photos/Photos selection librairie/"
-GLOBAL_PHOTOS_LIBRARY="/mnt/nas/famille/Drive/Moments/"
+GLOBAL_PHOTOS_LIBRARY="/mnt/triphotos/"
 GLOBAL_VIDEOS_LIBRARY="${NAS_MOUNT_POINT}/Videos librairie/Propres/"
 
 # Keep for comments but unused as we now skip (comment) the specific backup section for CAR
