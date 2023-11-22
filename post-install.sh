@@ -62,7 +62,7 @@ sudo cp squid/squidguard.conf /etc/squidguard/squidGuard.conf
 sudo cp squid/getlists.sh  /usr/local/bin/getlists.sh
 sudo chmod +x /usr/local/bin/getlists.sh
 
-# sudo getlists.sh
+sudo getlists.sh
 # ls -l /var/lib/squidguard/db/blacklists/
 
 
@@ -75,9 +75,6 @@ sudo snap install curl
 # Check if systemd service is enabled
 systemctl is-enabled squid
 
-# grep -qxF 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' /etc/squid/squid.conf || echo 'url_rewrite_program /usr/bin/squidGuard -c /etc/squid/squidGuard.conf' | sudo tee -a /etc/squid/squid.conf > /dev/null
-# grep -qxF 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' /etc/squid/squid.conf || echo 'acl bad_urls dstdomain "/etc/squid/bad_urls.acl"' | sudo tee -a /etc/squid/squid.conf > /dev/null
-# grep -qxF 'http_access deny bad_urls' /etc/squid/squid.conf || echo 'http_access deny bad_urls' | sudo tee -a /etc/squid/squid.conf > /dev/null
 
 # TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
@@ -107,36 +104,24 @@ set_gsettings () {
     USERNAME=$1
     LOCAL_UID=$(id -u ${USERNAME})
 
-    # sudo -u theo dbus-launch gsetting set org.gnome.system.proxy.http host localhost
-
-# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy mode manual
-# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.http host localhost
-# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.http port 3128
-# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.https host localhost
-# sudo -u leo dbus-launch gsettings set org.gnome.system.proxy.https port 3128
-# export APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
-# sudo -u leo dbus-launch gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
-# sudo -u leo dbus-launch gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false
-
-
     # Proxy
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy mode 'manual'"
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy.http host 'localhost'"
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy.https host 'localhost'"
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy.http port '3128'"
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.system.proxy.https port '3128'"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy mode 'manual'"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.http host 'localhost'"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.https host 'localhost'"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.http port '3128'"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.https port '3128'"
 
     # https://askubuntu.com/questions/1183009/manage-dash-to-dock-favorite-apps-by-command-line
     # Dock
     # Origin
     # ['firefox_firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop', 'google-chrome.desktop', 'code_code.desktop']
     APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.shell favorite-apps \"${APP_LIST}\""
-    sudo -H -u ${USERNAME} bash -c "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${LOCAL_UID}/bus gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false"
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.shell favorite-apps \"${APP_LIST}\""
+    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false"
     
 }
-# set_gsettings theo
-# set_gsettings leo
+set_gsettings theo
+set_gsettings leo
 
 # TODO avoid user to change proxy settings or network settings
 # https://askubuntu.com/questions/283142/how-can-i-restrict-users-fom-changing-network-settings-and-adding-new-connection
@@ -338,84 +323,100 @@ if [ ${DESKTOP_INSTALL} == "1" ]; then
     sudo systemctl restart xrdp
 fi
 
+if [ ${GALAXY_INSTALL} == "1" ]; then
 
-echo "install Gthumb"
-sudo apt install -y gthumb
-sudo apt install -y exiftool
+    echo "install Gthumb"
+    sudo apt install -y gthumb
+    sudo apt install -y exiftool
 
-# TODO add gthumb in favorites in GNOME
-# TODO manage rating shortcuts with custom actions laucnhing exiftool script
-# https://gitlab.gnome.org/GNOME/gthumb/-/issues/82
-# https://github.com/GNOME/gthumb/tree/master
-# TODO Define custom filter in browser view for rating - 
+    # TODO add gthumb in favorites in GNOME
+    # TODO manage rating shortcuts with custom actions laucnhing exiftool script
+    # https://gitlab.gnome.org/GNOME/gthumb/-/issues/82
+    # https://github.com/GNOME/gthumb/tree/master
+    # TODO Define custom filter in browser view for rating - 
 
-# # TODO add bookmark through command line (for /mnt/triphotos)
-#  cat $hOME/.config/gthumb/bookmarks.xbel 
-# seb@seb-KLVC-WXX9:~/ubuntu-desktop$ cat ../.config/gthumb/bookmarks.xbel 
-# <?xml version="1.0" encoding="UTF-8"?>
-# <xbel version="1.0"
-#       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
-#       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
-# >
-#   <bookmark href="file:///mnt/doux/Drive/Moments/2022/02" added="2023-11-19T12:12:28.718878Z" modified="2023-11-19T12:12:28.718893Z" visited="2023-11-19T12:12:28.718881Z">
-#     <info>
-#       <metadata owner="http://freedesktop.org">
-#         <bookmark:applications>
-#           <bookmark:application name="gThumb" exec="&apos;gthumb %u&apos;" modified="2023-11-19T12:12:28.718888Z" count="1"/>
-#         </bookmark:applications>
-#         <bookmark:private/>
-#       </metadata>
-#     </info>
-#   </bookmark>
+    # # TODO add bookmark through command line (for /mnt/triphotos)
+    #  cat $hOME/.config/gthumb/bookmarks.xbel 
+    # seb@seb-KLVC-WXX9:~/ubuntu-desktop$ cat ../.config/gthumb/bookmarks.xbel 
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <xbel version="1.0"
+    #       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
+    #       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
+    # >
+    #   <bookmark href="file:///mnt/doux/Drive/Moments/2022/02" added="2023-11-19T12:12:28.718878Z" modified="2023-11-19T12:12:28.718893Z" visited="2023-11-19T12:12:28.718881Z">
+    #     <info>
+    #       <metadata owner="http://freedesktop.org">
+    #         <bookmark:applications>
+    #           <bookmark:application name="gThumb" exec="&apos;gthumb %u&apos;" modified="2023-11-19T12:12:28.718888Z" count="1"/>
+    #         </bookmark:applications>
+    #         <bookmark:private/>
+    #       </metadata>
+    #     </info>
+    #   </bookmark>
 
-echo "Install dropbox with double install"
-# https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
-mkdir -p "$HOME"/.dropbox-carole
+    echo "Install dropbox with double install"
+    # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
+    mkdir -p "$HOME"/.dropbox-carole
 
-# TO configure /start : export HOME="$HOME/.dropbox-carole" && /usr/bin/dropbox start -i
-# WARNING seems it doesn't work when command is launched from vscode terminal...
-
-
-sudo apt install -y nautilus-dropbox
-#  /usr/bin/dropbox start -i
+    # TO configure /start : export HOME="$HOME/.dropbox-carole" && /usr/bin/dropbox start -i
+    # WARNING seems it doesn't work when command is launched from vscode terminal...
 
 
-echo "INstalling WhatsApp" 
-# https://github.com/eneshecan/whatsapp-for-linux
-sudo snap install whatsapp-for-linux
-
-echo "Define favorites for seb user"
-
-export APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'org.remmina.Remmina.desktop', 'seb.gnome-network-displays.desktop', 'org.gnome.gThumb.desktop']"
-gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
+    sudo apt install -y nautilus-dropbox
+    #  /usr/bin/dropbox start -i
 
 
-echo "installing gmail desktop app"
-sudo snap install gmail-desktop
-# TODO test thunderbird ?
+    echo "INstalling WhatsApp" 
+    # https://github.com/eneshecan/whatsapp-for-linux
+    sudo snap install whatsapp-for-linux
 
-sudo snap install gnome-contacts
-# TODO manage synchronisation ??
+    echo "Define favorites for seb user"
 
-sudo snap install audacity
-sudo snap connect audacity:alsa
-
-sudo snap install teams-for-linux
-
-echo "INstalling import photos scripts"
-
-sudo apt-get -y install msmtp
-envsubst < import_photos/msmtp.conf > /var/tmp/msmtp.conf.subst
-sudo mv /var/tmp/msmtp.conf.subst /etc/msmtprc
-sudo chown root:root /etc/msmtprc
-sudo chmod 600 /etc/msmtprc
+    export APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'org.remmina.Remmina.desktop', 'seb.gnome-network-displays.desktop', 'org.gnome.gThumb.desktop']"
+    gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
 
 
-sudo cp import_photos/import-photos.sh  /usr/local/bin/import-photos.sh
-sudo chmod +x /usr/local/bin/import-photos.sh
-sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
-sudo chmod +x /usr/local/bin/import-photos-mail.sh
+    echo "installing gmail desktop app"
+    sudo snap install gmail-desktop
+    # TODO test thunderbird ?
+
+    sudo snap install gnome-contacts
+    # TODO manage synchronisation ??
+
+    sudo snap install audacity
+    sudo snap connect audacity:alsa
+
+    sudo snap install teams-for-linux
+
+    echo "INstalling import photos scripts"
+
+    sudo apt-get -y install msmtp
+    envsubst < import_photos/msmtp.conf > /var/tmp/msmtp.conf.subst
+    sudo mv /var/tmp/msmtp.conf.subst /etc/msmtprc
+    sudo chown root:root /etc/msmtprc
+    sudo chmod 600 /etc/msmtprc
 
 
-sudo grep -qF 'import-photos-mail.sh' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/import-photos-mail.sh") | crontab -
-sudo grep -qF 'reboot' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/import-photos-mail.sh") | crontab -
+    sudo cp import_photos/import-photos.sh  /usr/local/bin/import-photos.sh
+    sudo chmod +x /usr/local/bin/import-photos.sh
+    sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
+    sudo chmod +x /usr/local/bin/import-photos-mail.sh
+
+
+    sudo grep -qF 'import-photos-mail.sh' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/import-photos-mail.sh") | crontab -
+    sudo grep -qF 'reboot' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/import-photos-mail.sh") | crontab -
+
+
+
+    echo "Install and configure VPN access"
+    envsubst < openvpn_config/nas.ovpn > /var/tmp/nas.ovpn
+    nmcli connection import type openvpn file /var/tmp/nas.ovpn
+    rm -f /var/tmp/nas.ovpn
+    # nmcli connection up nas
+    # nmcli connection down nas
+
+
+    # TODO how to set the username through CLI, and also password ??
+    # https://forums.openvpn.net/viewtopic.php?t=11342
+
+fi # GALAXY_INSTALL
