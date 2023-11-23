@@ -65,10 +65,13 @@ sudo chmod +x /usr/local/bin/getlists.sh
 sudo getlists.sh
 # ls -l /var/lib/squidguard/db/blacklists/
 
-
-# Set a cron (3 in the morning ??? are you sure for a desktop) to update the blacklist
-# Should find someting like on MacOS to launch the job at startup if it had not run for a while
-# 30 3 * * * /usr/local/bin/getlists.sh
+# Define a service with timer to run the job daily
+sudo cp squid/systemd.service /etc/systemd/system/getlist.service
+sudo cp squid/systemd.timer /etc/systemd/system/getlist.timer
+sudo systemctl enable getlist.service
+sudo systemctl start getlist.service
+sudo systemctl enable getlist.timer
+sudo systemctl start getlist.timer
 
 sudo apt install -y squid net-tools
 sudo snap install curl
@@ -402,6 +405,17 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     sudo chmod +x /usr/local/bin/import-photos.sh
     sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
     sudo chmod +x /usr/local/bin/import-photos-mail.sh
+
+    sudo cp import_photos/systemd.service /etc/systemd/system/import-photo-mail.service
+    sudo cp import_photos/systemd.timer /etc/systemd/system/import-photo-mail.timer
+    sudo systemctl enable import-photo-mail.service
+    sudo systemctl start import-photo-mail.service
+    sudo systemctl enable import-photo-mail.timer
+    sudo systemctl start import-photo-mail.timer
+
+    # sudo systemctl daemon-reload
+    # sudo systemctl restart import-photo-mail.timer
+    # sudo systemctl restart import-photo-mail.service
 
 
     sudo grep -qF 'import-photos-mail.sh' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/import-photos-mail.sh") | crontab -

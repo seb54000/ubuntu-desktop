@@ -1,0 +1,8 @@
+[Unit]
+Description=import-photos-mail service
+
+[Service]
+ExecStart=/usr/local/bin/import-photos-mail.sh
+
+[Install]
+WantedBy=default.target

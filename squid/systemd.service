@@ -1,0 +1,8 @@
+[Unit]
+Description=squidguard getlist service
+
+[Service]
+ExecStart=/usr/local/bin/getlists.sh
+
+[Install]
+WantedBy=default.target

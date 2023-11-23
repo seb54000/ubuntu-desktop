@@ -1,0 +1,11 @@
+[Unit]
+Description=Timer to run daily (and immediately when missed)
+# When activated, it triggers the service immediately if it missed the last start time (option Persistent=true), for example due to the system being powered off:
+# https://wiki.archlinux.org/title/systemd/Timers
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
