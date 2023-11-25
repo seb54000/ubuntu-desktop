@@ -163,4 +163,11 @@ Add shortcuts in nautllius in command line
 Backup files on MAC-OS
    See sciprt file and config to sse what is missign in conf
 
+
+COmmandes pour créer une archive avec preserve permissions et dates sur le MAC
+tar --create --preserve-permissions --owner=XXX --group=XXX --numeric-owner -z --file=../Documents.tar.gz -C /home/xxx/Documents
+pour la restauration
+tar --extract --preserve-permissions --owner=YYY --group=YYY --numeric-owner -z --file=Documents.tar.gz -C /home/yyy
+
+
 gthumb ...
