@@ -101,46 +101,17 @@ sudo systemctl reload squid
 # CHROMIUM
 # https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L111
 
-echo "Create users and GNOME session settings + browser"
+echo "Configure proxy in GNOME for users through setting an autostart script"
 
-# sudo apt install -y dbus-x11
+sudo cp squid/configure_proxy.sh /usr/local/bin/configure_proxy.sh
+sudo chmod +x /usr/local/bin/configure_proxy.sh
+sudo cp squid/configure_proxy.desktop /etc/xdg/autostart/configure_proxy.desktop
+sudo chmod +x /etc/xdg/autostart/configure_proxy.desktop
 
-set_gsettings () {
-    USERNAME=$1
-    LOCAL_UID=$(id -u ${USERNAME})
-
-    # Proxy
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy mode 'manual'"
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.http host 'localhost'"
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.https host 'localhost'"
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.http port '3128'"
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.system.proxy.https port '3128'"
-
-    # https://askubuntu.com/questions/1183009/manage-dash-to-dock-favorite-apps-by-command-line
-    # Dock
-    # Origin
-    # ['firefox_firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'rhythmbox.desktop', 'libreoffice-writer.desktop', 'snap-store_ubuntu-software.desktop', 'yelp.desktop', 'google-chrome.desktop', 'code_code.desktop']
-    APP_LIST="['org.gnome.Nautilus.desktop', 'libreoffice-writer.desktop', 'libreoffice-impress.desktop', 'snap-store_ubuntu-software.desktop', 'google-chrome.desktop', 'code_code.desktop', 'seb.gnome-network-displays.desktop']"
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.shell favorite-apps \"${APP_LIST}\""
-    sudo -u ${USERNAME} bash -c "dbus-launch gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts false"
-    
-}
-set_gsettings theo
-set_gsettings leo
 
 # TODO avoid user to change proxy settings or network settings
 # https://askubuntu.com/questions/283142/how-can-i-restrict-users-fom-changing-network-settings-and-adding-new-connection
 
-# gsettings very powerful to set gnome settings by command line
-# https://manpages.ubuntu.com/manpages/trusty/en/man1/gsettings.1.html
-
-sudo -H -u seb bash -c 'echo "I am $USER, with uid $UID"'
-
-# Remove firefox - set only chormium as a web-browser with restriction in file mode ?
-
-# gsettings set org.gnome.system.proxy mode "none"
-# gsettings set org.gnome.system.proxy.https host ""
-# gsettings set org.gnome.system.proxy.https port ""
 
 
 echo "Auto startup programs in GNOME session + dock customization and shortcuts"
@@ -472,3 +443,6 @@ Type=Application
 EOF
 
 sudo cp /var/tmp/seb.flatpak-xournalpp.desktop /usr/share/applications/
+
+echo "Installing sushi (equivalent to apple quick look)"
+sudo apt install -y gnome-sushi

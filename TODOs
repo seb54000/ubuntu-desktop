@@ -163,11 +163,21 @@ Add shortcuts in nautllius in command line
 Backup files on MAC-OS
    See sciprt file and config to sse what is missign in conf
 
+Documents
+Downloads
+Bureau
+et voir le reste s'il y a des choses...
 
 COmmandes pour créer une archive avec preserve permissions et dates sur le MAC
-tar --create --preserve-permissions --owner=XXX --group=XXX --numeric-owner -z --file=../Documents.tar.gz -C /home/xxx/Documents
+tar --create --preserve-permissions --owner=XXX --group=XXX --numeric-owner -z --exclude='._*' --file=../Documents.tar.gz -C /home/xxx/Documents
 pour la restauration
-tar --extract --preserve-permissions --owner=YYY --group=YYY --numeric-owner -z --file=Documents.tar.gz -C /home/yyy
+
+tar --extract --preserve-permissions --owner=seb --group=seb --numeric-owner -z --exclude='._*' --file=/mnt/doux/Downlaods_macOS.tar.gz -C /home/seb/
 
 
 gthumb ...
+
+TODO thunderbird and xournal++ as default PDF reader/editor
+https://www.reddit.com/r/gnome/comments/uobcfz/how_to_declare_that_a_flatpak_app_can_handle_a/
+
+THunderburd accont setting gmail, server settings / advanced / untick the show only subsrcided folders

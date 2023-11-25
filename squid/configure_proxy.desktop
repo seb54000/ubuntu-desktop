@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Configure Proxy
+Exec=/usr/local/bin/configure_proxy.sh
+X-GNOME-Autostart-enabled=true
