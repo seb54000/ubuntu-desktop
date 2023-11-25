@@ -116,10 +116,6 @@ https://askubuntu.com/questions/1350137/mount-google-drive-automatically-at-star
    --> voir aussi s'il ne suffit pas cocher le drive/folder dans online accounts
 
 
-AUtomatiser la mise à jour des définitions squidguard
-   envisager aussi de les partager sur le nas pour ne pas avoir besoin de les mettre à jour partout 
-   Voir si le proxy pourrait être configuré sur le NAS justement plutôt que sur chaque machine ??
-
 
 
 TODO snap error while using somme command line tools relating to GNOME
@@ -160,3 +156,11 @@ Add shortcuts in nautllius in command line
    MuseScore
    Ledger live (bitcoin)
    VVV (catalog CD software)
+
+   AirDrop usage ?? https://github.com/seemoo-lab/opendrop
+
+
+Backup files on MAC-OS
+   See sciprt file and config to sse what is missign in conf
+
+gthumb ...

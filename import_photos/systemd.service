@@ -2,6 +2,7 @@
 Description=import-photos-mail service
 
 [Service]
+User=root
 ExecStart=/usr/local/bin/import-photos-mail.sh
 
 [Install]

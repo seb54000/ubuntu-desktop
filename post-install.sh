@@ -22,6 +22,8 @@ source .env
 
 set -x
 
+/usr/bin/bash $(dirname $0)/user_mgmt/create_user.sh
+
 echo "Manage sudo rights for seb user"
 [ -f /etc/sudoers.d/seb ] || echo "seb ALL=(ALL) NOPASSWD:ALL" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/seb')
 
@@ -35,8 +37,7 @@ echo "Install VLC client"
 sudo snap install vlc
 
 echo "Install Google chrome"
-[ -f /usr/bin/google-chrome ] || \
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+[ -f /usr/bin/google-chrome ] || wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     sudo dpkg -i ./google-chrome*.deb && \
     rm ./google-chrome*.deb
 
@@ -102,6 +103,7 @@ sudo systemctl reload squid
 
 echo "Create users and GNOME session settings + browser"
 
+# sudo apt install -y dbus-x11
 
 set_gsettings () {
     USERNAME=$1
@@ -182,17 +184,15 @@ grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_
 # grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
 sudo mkdir -p /mnt/triphotos
 grep -qF '/mnt/triphotos' /etc/fstab || echo "//local.nas.multiseb.com/home/Drive/Moments /mnt/triphotos cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/backup
+grep -qF '/mnt/backup' /etc/fstab || echo "//local.nas.multiseb.com/home/ubuntu_backups /mnt/backup cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
 
 
 sudo mount -a
 
 
-# TODO Create a folder on NAS for backup / HOME directory and mount theri HOME dir on it
-# + a second one for DATAs
-
-
 echo "LAPTOP only - Disable the touch screen ???"
-
+# Huawei only
 
 echo "Screen cast to PicoPix Max projector (or others)"
 # We need gnome network display (only distributed through flatpak)
@@ -362,8 +362,9 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
     mkdir -p "$HOME"/.dropbox-carole
 
-    # TO configure /start : export HOME="$HOME/.dropbox-carole" && /usr/bin/dropbox start -i
+    # TO configure /start : export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start -i
     # WARNING seems it doesn't work when command is launched from vscode terminal...
+    # TODO add this command to bahs_rc or set a service to start this when not working anymore...
 
 
     sudo apt install -y nautilus-dropbox
@@ -435,3 +436,39 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     # https://forums.openvpn.net/viewtopic.php?t=11342
 
 fi # GALAXY_INSTALL
+
+echo "installating backup service"
+
+sudo cp backups/backup.sh  /usr/local/bin/backup.sh
+sudo chmod +x /usr/local/bin/backup.sh
+sudo cp backups/systemd.service /etc/systemd/system/backup.service
+sudo cp backups/systemd.timer /etc/systemd/system/backup.timer
+sudo systemctl enable backup.service
+sudo systemctl start backup.service
+sudo systemctl enable backup.timer
+sudo systemctl start backup.timer
+
+
+echo "Installing xournal++ for pdf editing"
+sudo flatpak install -y flathub com.github.xournalpp.xournalpp
+
+# https://askubuntu.com/questions/90345/desktop-launcher-documentation
+# TO find a suitable icon for your entry : find /usr/share/icons/ -name *pdf*
+cat <<EOF > /var/tmp/seb.flatpak-xournalpp.desktop
+[Desktop Entry]
+Name=xournalpp
+GenericName=Xournal++
+Comment=Edit PDF file (and other) with a breeze
+Exec=flatpak run com.github.xournalpp.xournalpp
+
+## State the name of the icon that will be used to display this entry ##
+Icon=gnome-mime-application-pdf
+Terminal=false
+Type=Application
+
+## States the categories in which this entry should be shown menu ##
+# Categories=System;Settings;GTK;HardwareSettings;
+# X-Ubuntu-Gettext-Domain=usbcreator
+EOF
+
+sudo cp /var/tmp/seb.flatpak-xournalpp.desktop /usr/share/applications/

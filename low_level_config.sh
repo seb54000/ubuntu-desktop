@@ -22,19 +22,6 @@ git config --global user.email seb54000@gmail.com
 #     git install : sudo apt install -y git
 #     setup the .env file
 
-echo "Create new user and modify password policy"
-
-# # sudo sed -i '/^.*pam_pwquality.so.*/s/^/#/' /etc/pam.d/common-password 
-# TODO moo ile to comment in a idempotent way
-# # password      requisite                       pam_pwquality.so retry=3
-# # password      [success=2 default=ignore]      pam_unix.so obscure use_authtok try_first_pass yescrypt
-# password    [success=1 default=ignore]  pam_unix.so minlen=1 sha512
-# # password      sufficient                      pam_sss.so use_authtok
-
-sudo useradd -m -s /bin/bash ${USERNAME_THEO}
-echo "${USERNAME_THEO}:${PASSWORD_THEO}" | sudo chpasswd
-sudo useradd -m -s /bin/bash ${USERNAME_LEO}
-echo "${USERNAME_LEO}:${PASSWORD_LEO}" | sudo chpasswd
 
 
 
