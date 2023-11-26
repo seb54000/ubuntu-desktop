@@ -137,17 +137,38 @@ cat <<EOF > /var/tmp/.famille.smb.credentials
 username=${FAMILLE_SMB_USERNAME}
 password=${FAMILLE_SMB_PASSWORD}
 EOF
+cat <<EOF > /var/tmp/.douce.smb.credentials
+username=${DOUCE_SMB_USERNAME}
+password=${DOUCE_SMB_PASSWORD}
+EOF
+cat <<EOF > /var/tmp/.bestphotos.smb.credentials
+username=${BEST_SMB_USERNAME}
+password=${BEST_SMB_PASSWORD}
+EOF
 sudo mv /var/tmp/.doux.smb.credentials /etc/.doux.smb.credentials
 sudo chmod 600 /etc/.doux.smb.credentials
 sudo chown root:root /etc/.doux.smb.credentials
 sudo mv /var/tmp/.famille.smb.credentials /etc/.famille.smb.credentials
 sudo chmod 600 /etc/.famille.smb.credentials
 sudo chown root:root /etc/.famille.smb.credentials
+sudo mv /var/tmp/.douce.smb.credentials /etc/.douce.smb.credentials
+sudo chmod 600 /etc/.douce.smb.credentials
+sudo chown root:root /etc/.douce.smb.credentials
+sudo mv /var/tmp/.bestphotos.smb.credentials /etc/.bestphotos.smb.credentials
+sudo chmod 600 /etc/.bestphotos.smb.credentials
+sudo chown root:root /etc/.bestphotos.smb.credentials
+
 
 sudo mkdir -p /mnt/films
 grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/doux
-grep -qF '/mnt/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/nas/doux
+grep -qF '/mnt/nas/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/nas/douce
+grep -qF '/mnt/nas/douce' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/douce cifs credentials=/etc/.douce.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/nas/bestphotos
+grep -qF '/mnt/nas/bestphotos' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/bestphotos cifs credentials=/etc/.bestphotos.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+sudo mkdir -p /mnt/nas/famille
+grep -qF '/mnt/nas/famille' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/famille cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
 # sudo mkdir -p /mnt/theo_home_dir
 sudo mkdir -p /home/theo/network_share
 grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo/network_share cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
@@ -341,7 +362,6 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
 
     sudo apt install -y nautilus-dropbox
     #  /usr/bin/dropbox start -i
-gir1.2-evince-3.0:amd64
 
     echo "INstalling WhatsApp" 
     # https://github.com/eneshecan/whatsapp-for-linux
@@ -379,13 +399,15 @@ gir1.2-evince-3.0:amd64
     sudo chmod +x /usr/local/bin/import-photos.sh
     sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
     sudo chmod +x /usr/local/bin/import-photos-mail.sh
+    sudo cp import_photos/import-photos-rating-dispatch.sh  /usr/local/bin/import-photos-rating-dispatch.sh
+    sudo chmod +x /usr/local/bin/import-photos-rating-dispatch.sh
 
     sudo cp import_photos/systemd.service /etc/systemd/system/import-photo-mail.service
     sudo cp import_photos/systemd.timer /etc/systemd/system/import-photo-mail.timer
     sudo systemctl enable import-photo-mail.service
     sudo systemctl start import-photo-mail.service
     sudo systemctl enable import-photo-mail.timer
-    sudo systemctl start import-photo-mail.timergir1.2-evince-3.0:amd64
+    sudo systemctl start import-photo-mail.timer
 
     # sudo systemctl daemon-reload
     # sudo systemctl restart import-photo-mail.timer
@@ -448,3 +470,9 @@ sudo cp /var/tmp/seb.flatpak-xournalpp.desktop /usr/share/applications/
 
 echo "Installing sushi (equivalent to apple quick look)"
 sudo apt install -y gnome-sushi
+
+echo "Install SSHD to be able to connect remotely"
+sudo apt install -y openssh-server
+mkdir -p /home/seb/.ssh
+chmod 700 /home/seb/.ssh
+echo ${UBUNTU_DESKTOP_DOUX_KEY} > /home/seb/.ssh/authorized_keys

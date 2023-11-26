@@ -1,7 +1,4 @@
 #!/bin/bash
-PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
-
-# USAGE : 
 
 
 #set -e   # We prefer the script to stop as soon as one command fail
