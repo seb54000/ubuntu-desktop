@@ -82,7 +82,7 @@ systemctl is-enabled squid
 
 # TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
-echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.co' | sudo tee /etc/squid/bad_urls.acl > /dev/null
+echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.co\.nminiroyale.io' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
 sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
@@ -298,6 +298,7 @@ if [ ${DESKTOP_INSTALL} == "1" ]; then
     sudo systemctl restart xrdp
 fi
 
+
 if [ ${GALAXY_INSTALL} == "1" ]; then
 
     echo "install Gthumb"
@@ -340,7 +341,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
 
     sudo apt install -y nautilus-dropbox
     #  /usr/bin/dropbox start -i
-
+gir1.2-evince-3.0:amd64
 
     echo "INstalling WhatsApp" 
     # https://github.com/eneshecan/whatsapp-for-linux
@@ -352,9 +353,10 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
 
 
-    echo "installing gmail desktop app"
-    sudo snap install gmail-desktop
+    # echo "installing gmail desktop app"
+    # sudo snap install gmail-desktop
     # TODO test thunderbird ?
+    sudo snap remove -y gmail-desktop
 
     sudo snap install gnome-contacts
     # TODO manage synchronisation ??
@@ -383,7 +385,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     sudo systemctl enable import-photo-mail.service
     sudo systemctl start import-photo-mail.service
     sudo systemctl enable import-photo-mail.timer
-    sudo systemctl start import-photo-mail.timer
+    sudo systemctl start import-photo-mail.timergir1.2-evince-3.0:amd64
 
     # sudo systemctl daemon-reload
     # sudo systemctl restart import-photo-mail.timer
