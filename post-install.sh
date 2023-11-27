@@ -483,4 +483,6 @@ echo "Add Nautilus bookmarks / shortcuts"
 grep -qF 'Desktop_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Desktop_shared Desktop_shared" >> /home/seb/.config/gtk-3.0/bookmarks
 grep -qF 'Documents_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared Documents_shared" >> /home/seb/.config/gtk-3.0/bookmarks
 grep -qF 'Downloads_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Downloads_shared Downloads_shared" >> /home/seb/.config/gtk-3.0/bookmarks
+grep -qF 'Paie' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared/Papiers%20administratif%20archives/Employeur/BDF/Paie Paie" >> /home/seb/.config/gtk-3.0/bookmarks
+grep -qF 'Quittances' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared/Papiers%20administratif%20archives/Appartement/VALOIS/Quittances Quittances" >> /home/seb/.config/gtk-3.0/bookmarks
 
