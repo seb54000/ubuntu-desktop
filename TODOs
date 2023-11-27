@@ -174,10 +174,82 @@ pour la restauration
 
 tar --extract --preserve-permissions --owner=seb --group=seb --numeric-owner -z --exclude='._*' --file=/mnt/doux/Downlaods_macOS.tar.gz -C /home/seb/
 
+Ce mode pose problème car les dates des dossiers ne sont pas préservés.
+Il faut refaire un test depuis le macOS avec un rsync utilisant ssh entre les deux PC en utilisant la clé
+   https://forum.ubuntu-fr.org/viewtopic.php?id=336213
+   rsync -Pav -e "ssh -i $HOME/.ssh/somekey" username@hostname:/from/dir/ /to/dir/
+
+   rsync -a --numeric-ids --chown=YYY:YYY /source/ /destination/
+
+--verbose: couplée avec --progress, force rsync à détailler ce qui est exécuté à chaque instant
+--progress: cf --verbose
+--stats: affiche données relatives au transfert (nombre et taille des fichiers transférés entre autres)
+--recursive: permet de ne pas sŽarrêter au répertoire cible et de descendre dans tous les sous-répertoires
+--times: demande à rsync de transférer les dates de modifications des fichiers en même temps que les fichiers. Permet dŽincrémenter les sauvegardes.
+--perms: met à jour les permissions sur le répertoire cible en fonction des modifications réalisées sur répertoire source
+--links: conserve les liens symboliques sur le répertoire cible
+--compress: permet à rsync dŽutiliser la compression gzip pour transférer les fichiers
+--rsh=ssh: permet de protéger les données lors de leur transfert
+--delete: supprime sur répertoire cible les fichiers supprimés sur répertoire source
+--itemize-changes: affiche un résumé des changements pour chaque mise à jour
+
 
 gthumb ...
+   Look at preferences and see how to config through command line
+      can use double click to open pictures while in browser mode (instead of simple click by default)
+      can modify caption displyad along the picture sin browser mode (like filename and rating instead of comments)
+         i choose filename, rating , comments / rating , EXIF original date time
+
+test de geeqie l'autre proposition de chatgpt
+   sudo apt install -y geeqie
+
+   Need to activate overlay to see ratings and fileName, ...
+      can customize the overlay to add/remove informations
+   Need to sort by rating (can't seem a filter is working here (yet)
+   Need to say to save metadata as soon as possible (filechange)
+      we can use write after timeout and put 0 seconds and it is immediate !!
+   Need to change the shortcuts to have ctrl+1 , 2, 3 for the rating 
+   Can use ctrl+K to show the control/info panel instead of overlay to see rating
+
+   quand on change un rating, il se retrouve là où est le rating, il faudrait au moins avoir un shrotcut pour revenir à la première photo dela liste pour continuer le rating facilement
+      c'est la touche HOME par défaut qui permet d'aller à la première image (il faudrait éventuellement changer le shortctu pour plus de proximité, pareil pour le rating, au lieu de ctrl mettre juste les chiffres et pensez au 0)
+         j'ai mis la lettre a pour select photo 1 et juste les chiffres de 1 à 5 et le 0 pour le rating, ça devrait pas être si mal
+   Bon point, sélection multiple + rating modifie bien toutes les photos
+
+
+Arghhhhh... on dirait que geeqie sauve les metadatas dans un autre champ de type windows rating (c'est ce u'on voit s'afficher dans les détails de gthumb)
+   et du coup, même avec exiftool, je vois pas ce rating....
+      Gthumb les classe dans EXIF others
+         et impossible de le voir dans exiftool....
+            si si tout est bien là sans problème, je regardais dans le mauvais répertoire ;-)
+
+geeqie utiliserait exiv2 pour les metatda, à tester pour voir si on peut les afficher
+
+Le seul point qui reste, c'est de pouvoir filtrer pour n'afficher que les images avec un certain rating dans geeqie pour faciliter le classement, voir ce qui reste, etc...
+   On peut faire le sort, mais pas le filtre, c'est vraiment dommage
+
 
 TODO thunderbird and xournal++ as default PDF reader/editor
 https://www.reddit.com/r/gnome/comments/uobcfz/how_to_declare_that_a_flatpak_app_can_handle_a/
 
 THunderburd accont setting gmail, server settings / advanced / untick the show only subsrcided folders
+
+
+Fermer la session GNOME mais fermer avant en mode distant les documents ouverts
+   https://ask.libreoffice.org/t/close-libreoffice-gracefuly-from-command-line/34120/3
+
+Et voir quand même s'il n'y a pas une meilleure solution que le montage du répertoire sur home parce que les documents semblent systématiquement corrompus
+
+
+Service pour lancer automatiquement sur desktop dès le boot les ocntainers pour transmission (et ne pas attendre qu'on ouvre une session)
+Il suffit de faire un service de type bas qui lancera les containers uniquement au boot
+   ou peut-être simplement un cronjob dans ce cas avec l'option @boot 
+
+
+Spotlight like for ubuntu
+   https://extensions.gnome.org/extension/5489/search-light/
+   https://www.reddit.com/r/Ubuntu/comments/l4s4s0/spotlight_search_for_ubuntu/
+
+
+Recherches récursives même au sein d'une remote location
+https://askubuntu.com/questions/852940/how-can-i-make-files-search-recursively-within-a-network-share

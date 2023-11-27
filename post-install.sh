@@ -476,3 +476,11 @@ sudo apt install -y openssh-server
 mkdir -p /home/seb/.ssh
 chmod 700 /home/seb/.ssh
 echo ${UBUNTU_DESKTOP_DOUX_KEY} > /home/seb/.ssh/authorized_keys
+
+
+echo "Add Nautilus bookmarks / shortcuts"
+
+grep -qF 'Desktop_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Desktop_shared Desktop_shared" >> /home/seb/.config/gtk-3.0/bookmarks
+grep -qF 'Documents_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared Documents_shared" >> /home/seb/.config/gtk-3.0/bookmarks
+grep -qF 'Downloads_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Downloads_shared Downloads_shared" >> /home/seb/.config/gtk-3.0/bookmarks
+
