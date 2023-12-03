@@ -23,6 +23,16 @@ SIZE_LIMIT=2000
 # Enregistrez le début du temps d'exécution
 START_TIME=$(date +%s)
 
+# Check if NAS is well mounted
+NAS_MOUNTED=$(mount | grep backup)
+if [ $? -eq 0 ]; then
+    echo "NAS mount is correctly mounted, let's continue the backup"
+else
+    echo "Backup failed NAS NOT AVAILABLE for $(hostname)\n\nProblem with nas mounting, let's break the job"
+    echo -e "Subject:WARNING : Backup failed NAS NOT AVAILABLE for $(hostname)\n\nProblem with nas mounting, let's break the job" | sudo msmtp seb54000@gmail.com
+    exit 1
+fi
+
 # Créer le répertoire d'historique s'il n'existe pas
 mkdir -p $HISTORY_DIR $LOG_DIR $BACKUP_DIR
 

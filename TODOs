@@ -25,41 +25,14 @@ How to reinstall windows if we completely wipe all the disks and only create par
 Software and config after install
 - set screen resolution
 - google account at ubuntu level ? (permit GNOME to access google)
-- chrome download + install : sudo dpkg -i .deb
-   - setup google synchronization
-- install vscode (via snap)
-   - connect / clone github repo ubuntu-desktop
-- sudo apt install git
+- setup google chrome synchronization
 
-sudo snap install htop
-
-
-git clone https://github.com/seb54000/ubuntu-desktop.git
-
-
-- installer proxy squid avec des règles limitant l'accès à internet
-- ne pas avoir les droits sudo pour les enfants
-- installer une suite office pour les enfants
-- vérifier que l'impression est possible
 - limiter les programmes qui peuven t être lancés 
-- voir comment faire la conf de base à l'ouverture de session pour GNOME (éviter de demander le paramétrage d'un compte google, savoir si on veut envoyer les infos, etc...)
 
-- outil de capture d'écran
-   il suffit d'appuyer sur imprim ecran et ça lance l'utilitaire
-- office writer est déjà intallé
-
-
-
-- install Gdrive and set keepass
+- install Gdrive (done throughg gmail setup ?)
    https://doc.ubuntu-fr.org/google_drive
-
-
-
-- keepass for sharing secrets 
-   - dashlane alternatives ??? 
-      - bitwarden ??   Ask Romain 
+Sharing keepass instance to aggregate passwords of kids ?
    - https://superuser.com/questions/44028/best-way-to-share-certain-passwords-stored-in-keepass
-
 
 
 - restore session tools at startup (even after shutdown) - see in tf-ami 
@@ -72,50 +45,10 @@ git clone https://github.com/seb54000/ubuntu-desktop.git
    https://ossmalta.eu/how-to-disable-welcome-screen-first-login-dialog-in-ubuntu-22-04/
 
 
-- install DropBox
-   https://doc.ubuntu-fr.org/application_dropbox
-   https://doc.ubuntu-fr.org/rclone
-   Set default applications (for video = VLC for instance)
-    - GUI : settings / default applications
-    - 
-    - https://help.gnome.org/admin/system-admin-guide/stable/mime-types-application-user.html.en
-
-Change default terminal for gnome
-gsettings list-recursively | grep -i terminal
-org.gnome.desktop.default-applications.terminal exec 'gnome-terminal'
-
-
-Turn on SYNC on google chrome
-   in an automted way / command line
-
-openVPN configuration in order to connect when in REPAIX for instance
-
-
-SSH connexion to DESKTOP with a SSH key that we store in Keepass
-   - public key could be in git repo ?
-   - study the use of guacamole with docker in order to give access through simple browser
-   - install XRDP to share also the session and screen ?? (beware of multiple session for same user)
-
-Add a DNS records on OVH for DESKTOP (ease local RDP access)
-
-
-TIme machine equivalent in ubuntu
-https://chat.openai.com/c/fdafa55d-55b2-4de9-9ad4-9b142baae16d
-   dup / duplicity
-   timeshift -- snapshot facilitant la restore
-   rsync en plus pour certains répertoires
-      pas forcément besoin de tout sauvegarder d'ailleurs, il suffit d'un bon rsync avec des versions séparées sur les fichiers de datas mais pour le reste (install des softs, je dois être en mesure de facilmeent tout restaurer avec le script d'install)
-   voir également rclone qu permet de cpier vers des dropbox, gdrive, ...
-         https://doc.ubuntu-fr.org/rclone
-
-
 Mount Gdrive sur DEKSTOP comme sur laptop
    gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
 https://askubuntu.com/questions/1350137/mount-google-drive-automatically-at-startup-as-in-nautilus
-
    --> voir aussi s'il ne suffit pas cocher le drive/folder dans online accounts
-
-
 
 
 TODO snap error while using somme command line tools relating to GNOME
@@ -125,25 +58,19 @@ seb@seb-KLVC-WXX9:~/ubuntu-desktop$ gio mount
 /snap/core20/current/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib/x86_64-linux-gnu/libproxy.so.1)
 Failed to load module: /home/seb/snap/code/common/.cache/gio-modules/libgiolibproxy.so
 gio: No locations given
-
-A priori lié au fait de lancer la commande depuis un terminal VScode, à tester extensivement mais si on le fait depuis un terminal normal, il n'y a pas d'erreur...
-
-
-Add shortcuts in nautllius in command line
-   /mnt/doux
-      https://forum.zorin.com/t/change-file-managers-nautilus-sidebar/12251
-      edit ~/.config/user-dirs.dirs and /etc/xdg/user-dirs.defaults
-
-      xdg-user-dirs-update --set XDG_NASDOUX_DIR "/mnt/doux"
+      A priori lié au fait de lancer la commande depuis un terminal VScode, à tester extensivement mais si on le fait depuis un terminal normal, il n'y a pas d'erreur...
 
    Hiding some sidebar natulius shortcut -(like music)
    https://www.reddit.com/r/gnome/comments/wh3p1r/why_cant_i_delete_default_bookmarks_in_nautilus/
    https://www.freedesktop.org/wiki/Software/xdg-user-dirs/
 
+
    Macbook migration
    MS teams
    AUdacity
    Notes gmail /iphone
+      https://askubuntu.com/questions/809775/note-application-that-uses-imap-protocol
+      https://addons.thunderbird.net/en-us/thunderbird/addon/ios-imap-notes/
    Gimp (cartes de voeux)
    Equivalent airdrop ?
    HandBRake
@@ -167,42 +94,15 @@ Documents
 Downloads
 Bureau
 et voir le reste s'il y a des choses...
+   surtout à la racine du home dir
 
-COmmandes pour créer une archive avec preserve permissions et dates sur le MAC
-tar --create --preserve-permissions --owner=XXX --group=XXX --numeric-owner -z --exclude='._*' --file=../Documents.tar.gz -C /home/xxx/Documents
-pour la restauration
-
-tar --extract --preserve-permissions --owner=seb --group=seb --numeric-owner -z --exclude='._*' --file=/mnt/doux/Downlaods_macOS.tar.gz -C /home/seb/
-
-Ce mode pose problème car les dates des dossiers ne sont pas préservés.
 Il faut refaire un test depuis le macOS avec un rsync utilisant ssh entre les deux PC en utilisant la clé
    https://forum.ubuntu-fr.org/viewtopic.php?id=336213
    rsync -Pav -e "ssh -i $HOME/.ssh/somekey" username@hostname:/from/dir/ /to/dir/
-
    rsync -a --numeric-ids --chown=YYY:YYY /source/ /destination/
 
---verbose: couplée avec --progress, force rsync à détailler ce qui est exécuté à chaque instant
---progress: cf --verbose
---stats: affiche données relatives au transfert (nombre et taille des fichiers transférés entre autres)
---recursive: permet de ne pas sŽarrêter au répertoire cible et de descendre dans tous les sous-répertoires
---times: demande à rsync de transférer les dates de modifications des fichiers en même temps que les fichiers. Permet dŽincrémenter les sauvegardes.
---perms: met à jour les permissions sur le répertoire cible en fonction des modifications réalisées sur répertoire source
---links: conserve les liens symboliques sur le répertoire cible
---compress: permet à rsync dŽutiliser la compression gzip pour transférer les fichiers
---rsh=ssh: permet de protéger les données lors de leur transfert
---delete: supprime sur répertoire cible les fichiers supprimés sur répertoire source
---itemize-changes: affiche un résumé des changements pour chaque mise à jour
 
-
-gthumb ...
-   Look at preferences and see how to config through command line
-      can use double click to open pictures while in browser mode (instead of simple click by default)
-      can modify caption displyad along the picture sin browser mode (like filename and rating instead of comments)
-         i choose filename, rating , comments / rating , EXIF original date time
-
-test de geeqie l'autre proposition de chatgpt
-   sudo apt install -y geeqie
-
+Geeqie configuration to automate / backup as config file
    Need to activate overlay to see ratings and fileName, ...
       can customize the overlay to add/remove informations
    Need to sort by rating (can't seem a filter is working here (yet)
@@ -216,17 +116,9 @@ test de geeqie l'autre proposition de chatgpt
          j'ai mis la lettre a pour select photo 1 et juste les chiffres de 1 à 5 et le 0 pour le rating, ça devrait pas être si mal
    Bon point, sélection multiple + rating modifie bien toutes les photos
 
-
-Arghhhhh... on dirait que geeqie sauve les metadatas dans un autre champ de type windows rating (c'est ce u'on voit s'afficher dans les détails de gthumb)
-   et du coup, même avec exiftool, je vois pas ce rating....
-      Gthumb les classe dans EXIF others
-         et impossible de le voir dans exiftool....
-            si si tout est bien là sans problème, je regardais dans le mauvais répertoire ;-)
-
-geeqie utiliserait exiv2 pour les metatda, à tester pour voir si on peut les afficher
-
 Le seul point qui reste, c'est de pouvoir filtrer pour n'afficher que les images avec un certain rating dans geeqie pour faciliter le classement, voir ce qui reste, etc...
    On peut faire le sort, mais pas le filtre, c'est vraiment dommage
+   IL faut ouvrir une issue sur le github et proposer d ele faire mais avec un peu d'aide, je sais même pas où regarder (entre le sort et le filter on doit pouvoir faire quelque chose)
 
 
 TODO thunderbird and xournal++ as default PDF reader/editor
@@ -251,5 +143,21 @@ Spotlight like for ubuntu
    https://www.reddit.com/r/Ubuntu/comments/l4s4s0/spotlight_search_for_ubuntu/
 
 
-Recherches récursives même au sein d'une remote location
-https://askubuntu.com/questions/852940/how-can-i-make-files-search-recursively-within-a-network-share
+Find and remove .DStore files taht belongs to a Windows install ??
+
+
+Galaxy book
+  - maange fingerprint ID login
+  - luminosité / brightness shorttcuts do not work
+  - son sur les HP ne marche pas
+
+
+VI key bindings for arrows
+
+
+Look on ubuntu integrated backup tool
+   - at least see how to deactivate reminders 
+
+
+Lire les vidéos avec sushi / aperçu
+Par contre ça marche pas pour les aperçu avec sushi (normal mais ilfaudrait voir à installer/Référencer les codecs pour sushi aperçu pour qu'il puisse les lire)

@@ -50,6 +50,33 @@ PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
 # https://gist.github.com/L422Y/8697518
 # sudo automount -vc pour prise en compte des changements
 
+# Check dropboxes are running (if not start them)
+ps -efw | grep -e \/seb\/.dropbox-dist | grep -v grep > /tmp/droptest
+grep -e dropbox-dist /tmp/droptest
+if [ "$?" -ne "0" ]; then
+	echo "Dropbox Seb is not running, start it"
+	set -e
+	/usr/bin/dropbox start > /dev/null
+	set +e
+	sleep 15
+	rm -f /tmp/droptest
+fi
+
+ps -efw | grep -e dropbox-carole | grep -v grep > /tmp/droptest
+grep -e dropbox-carole /tmp/droptest
+if [ "$?" -ne "0" ]; then
+	echo "Actual HOME = $HOME"
+	ACTUAL_HOME=$HOME
+	echo "Dropbox Carole is not running, start it"
+	set -e
+	export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start > /dev/null
+	set +e
+	sleep 15
+	export HOME=$ACTUAL_HOME
+	echo "Restore actual HOME : $HOME"
+	rm -f /tmp/droptest
+fi
+
 
 WARNING_ON_EXEC=0
 
@@ -168,7 +195,8 @@ for USER in CAR SEB ; do
 	# Renommage des fichiers vidéos via exiftool
 	cd "$VIDEOS_WORK_DIR"
 	# pour éviter une possible erreur : File format error - ./._20170902-175811-SEB-VID.MOV
-	dot_clean -m .
+	# dot_clean -m .
+	# Remove this on ubuntu as ._ files are on MacOS only
 
 	echo "---- Rename des MOV et MP4 du user : $USER via exiftool dans le répertoire $VIDEOS_WORK_DIR ----" 
 	echo ""

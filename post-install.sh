@@ -322,8 +322,8 @@ fi
 
 if [ ${GALAXY_INSTALL} == "1" ]; then
 
-    echo "install Gthumb"
-    sudo apt install -y gthumb
+    echo "install Gthumb and Geeqie"
+    sudo apt install -y gthumb geeqie
     sudo apt install -y exiftool
 
     # TODO add gthumb in favorites in GNOME
@@ -354,14 +354,10 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     echo "Install dropbox with double install"
     # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
     mkdir -p "$HOME"/.dropbox-carole
-
-    # TO configure /start : export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start -i
-    # WARNING seems it doesn't work when command is launched from vscode terminal...
-    # TODO add this command to bahs_rc or set a service to start this when not working anymore...
-
-
     sudo apt install -y nautilus-dropbox
-    #  /usr/bin/dropbox start -i
+        # The start of the second dropbox is done thrugh this command (laucnhed on a new terminal for frst configuration)
+            # export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start -i
+        # The import-photos.sh script will check that everythgin is started and restart
 
     echo "INstalling WhatsApp" 
     # https://github.com/eneshecan/whatsapp-for-linux
@@ -394,6 +390,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     sudo chown root:root /etc/msmtprc
     sudo chmod 600 /etc/msmtprc
 
+    sudo apt-get -y install fdupes
 
     sudo cp import_photos/import-photos.sh  /usr/local/bin/import-photos.sh
     sudo chmod +x /usr/local/bin/import-photos.sh
@@ -486,3 +483,19 @@ grep -qF 'Downloads_shared' /home/seb/.config/gtk-3.0/bookmarks || echo "file://
 grep -qF 'Paie' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared/Papiers%20administratif%20archives/Employeur/BDF/Paie Paie" >> /home/seb/.config/gtk-3.0/bookmarks
 grep -qF 'Quittances' /home/seb/.config/gtk-3.0/bookmarks || echo "file:///mnt/doux/Documents_shared/Papiers%20administratif%20archives/Appartement/VALOIS/Quittances Quittances" >> /home/seb/.config/gtk-3.0/bookmarks
 
+echo "Installing Gimp for cards and more"
+sudo apt install -y gimp
+
+echo "set recursive search in Nautilus to be bale to easily search within NAS and remote dirs"
+# https://askubuntu.com/questions/852940/how-can-i-make-files-search-recursively-within-a-network-share
+gsettings set org.gnome.nautilus.preferences recursive-search 'always'
+
+
+# echo "Associate mime video fileTYpe association with VLC"
+# # - https://help.gnome.org/admin/system-admin-guide/stable/mime-types-application-user.html.en
+# sudo sed -i s/org.gnome.Totem.desktop/vlc_vlc.desktop/g /usr/share/applications/gnome-mimeapps.list
+
+# echo "Associate mime pdf fileTYpe association with xournalpp"
+# sudo sed -i s/org.gnome.Totem.desktop/seb.flatpak-xournalpp.desktop/g /usr/share/applications/gnome-mimeapps.list
+
+# seb.flatpak-xournalpp.desktop 
