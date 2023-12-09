@@ -148,7 +148,9 @@ Find and remove .DStore files taht belongs to a Windows install ??
 
 Galaxy book
   - maange fingerprint ID login
+    - https://askubuntu.com/questions/1406999/i-cant-use-fingerprint-sensor-in-ubuntu-22-04
   - luminosité / brightness shorttcuts do not work
+     - https://unix.stackexchange.com/questions/714196/oled-screen-brightness-doesnt-work-samsung-galaxy-book
   - son sur les HP ne marche pas
 
 
@@ -161,3 +163,18 @@ Look on ubuntu integrated backup tool
 
 Lire les vidéos avec sushi / aperçu
 Par contre ça marche pas pour les aperçu avec sushi (normal mais ilfaudrait voir à installer/Référencer les codecs pour sushi aperçu pour qu'il puisse les lire)
+
+
+
+
+Erreur backup rsync
+rsync: [generator] mknod "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox-carole/.dropbox/.command_socket.601880" failed: Operation not permitted (1)
+rsync: [generator] mknod "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox-carole/.dropbox/.iface_socket.601880" failed: Operation not permitted (1)
+rsync: [generator] symlink "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox-carole/.var/app/com.github.xournalpp.xournalpp/.ld.so/active" -> "4c8fd3c9675c93c2918fc71033bd9658dc3466b1525c3e6c7035118faa8ec8db" failed: Operation not supported (95)
+rsync: [generator] mknod "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox/.command_socket.601880" failed: Operation not permitted (1)
+rsync: [generator] mknod "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox/.iface_socket.601880" failed: Operation not permitted (1)
+
+
+
+Service to send recurring emails (with a cron job)
+  -- pour se faire des rappels sur les déclartaions URSAFF

@@ -490,12 +490,15 @@ echo "set recursive search in Nautilus to be bale to easily search within NAS an
 # https://askubuntu.com/questions/852940/how-can-i-make-files-search-recursively-within-a-network-share
 gsettings set org.gnome.nautilus.preferences recursive-search 'always'
 
+echo "Install pdfjam very handy to manipulate pdf (join them, etc..)"
+sudo apt install -y texlive-extra-utils
 
-# echo "Associate mime video fileTYpe association with VLC"
-# # - https://help.gnome.org/admin/system-admin-guide/stable/mime-types-application-user.html.en
-# sudo sed -i s/org.gnome.Totem.desktop/vlc_vlc.desktop/g /usr/share/applications/gnome-mimeapps.list
 
-# echo "Associate mime pdf fileTYpe association with xournalpp"
-# sudo sed -i s/org.gnome.Totem.desktop/seb.flatpak-xournalpp.desktop/g /usr/share/applications/gnome-mimeapps.list
+echo "Associate mime video fileTYpe association with VLC"
+# - https://help.gnome.org/admin/system-admin-guide/stable/mime-types-application-user.html.en
+sudo sed -i s/org.gnome.Totem.desktop/vlc_vlc.desktop/g /usr/share/applications/gnome-mimeapps.list
+
+echo "Associate mime pdf fileTYpe association with xournalpp"
+sudo sed -i s/org.gnome.Totem.desktop/seb.flatpak-xournalpp.desktop/g /usr/share/applications/gnome-mimeapps.list
 
 # seb.flatpak-xournalpp.desktop 
