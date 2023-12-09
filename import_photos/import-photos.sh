@@ -59,8 +59,8 @@ if [ "$?" -ne "0" ]; then
 	/usr/bin/dropbox start > /dev/null
 	set +e
 	sleep 15
-	rm -f /tmp/droptest
 fi
+sudo rm -f /tmp/droptest
 
 ps -efw | grep -e dropbox-carole | grep -v grep > /tmp/droptest
 grep -e dropbox-carole /tmp/droptest
@@ -74,9 +74,24 @@ if [ "$?" -ne "0" ]; then
 	sleep 15
 	export HOME=$ACTUAL_HOME
 	echo "Restore actual HOME : $HOME"
-	rm -f /tmp/droptest
 fi
+sudo rm -f /tmp/droptest
 
+# Check if NAS is well mounted
+NAS_MOUNTED=$(mount | grep mnt/doux)
+if [ $? -eq 0 ]; then
+    echo "NAS mount is correctly mounted, let's continue the import"
+else
+    echo -e "Subject:WARNING : import failed NAS NOT AVAILABLE, will try to mount everything"
+	sudo mount -a
+	NAS_MOUNTED=$(mount | grep mnt/doux)
+	if [ $? -eq 0 ]; then
+		echo "NAS mount is now OK, let's continue"
+	else
+		echo "ERROR : mounting NAS is not possible, let's stop the script"
+	    exit 1
+	fi
+fi
 
 WARNING_ON_EXEC=0
 
