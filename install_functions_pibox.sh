@@ -33,7 +33,7 @@ install_transmission () {
     docker ps | grep transmission-openvpn-proxy &> /dev/null || \
     docker run -d \
       --restart unless-stopped \
-      --link transmission-openvpn:transmission \
+      --link transmission-openvpn-core:transmission \
       -p 8080:8080 \
       --name transmission-openvpn-proxy \
       haugene/transmission-openvpn-proxy
@@ -73,6 +73,7 @@ install_import_photos () {
 install_xrdp () {
     echo "install XRDP"
     sudo apt install xrdp -y
+    sudo adduser xrdp ssl-cert
     sudo systemctl enable xrdp
     # sudo usermod -a -G ssl-cert xrdp
     sudo systemctl restart xrdp
@@ -84,8 +85,8 @@ install_kodi () {
     # TODO for each user 
     mkdir -p /home/seb/.kodi
     # fstab line with uid / gid
-    grep -qF '/home/seb/.kodi' /etc/fstab || echo "//local.nas.multiseb.com/home/films/kodi_datas /home/seb/.kodi cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-    sudo mount -a
+    # grep -qF '/home/seb/.kodi' /etc/fstab || echo "//local.nas.multiseb.com/home/films/kodi_datas /home/seb/.kodi cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
+    # sudo mount -a
     # https://kodi.wiki/view/Kodi_data_folder
 }
 

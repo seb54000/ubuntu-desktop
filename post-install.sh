@@ -56,7 +56,7 @@ if [ ${PI400_INSTALL} == "1" ]; then
     install_transmission
     install_kodi
 
-    # install_xrdp
+    install_xrdp
 fi
 
 
