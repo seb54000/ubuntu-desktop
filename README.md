@@ -12,6 +12,7 @@ Target is to auto install in a cloud init manner the whole OS and configuration,
 - First login and finish the 3/4 questions process (you can do later the GNOME online accounts config if you like)
 - sudo apt install -y git
 - git clone https://github.com/seb54000/ubuntu-desktop.git
+- get SSH public key : https://gist.githubusercontent.com/seb54000/9a112282dc69ba9e9248634deabaa0e0/raw/eeda7a6b0ca3da0a0876b8ec6dd00626012737c4/gistfile1.txt
 
 
 
