@@ -16,30 +16,66 @@ trap handle_error ERR
 trap cleanup EXIT
 
 
-
-# TODO check if .env file do not exists, stop (as we will have problem later like removing of credentials in smb credentials)
 source .env
+source $(dirname $0)/install_functions_common.sh
+source $(dirname $0)/install_functions_laptop.sh
+source $(dirname $0)/install_functions_pibox.sh
 
-set -x
 
-/usr/bin/bash $(dirname $0)/user_mgmt/create_user.sh
+### Common config ###
+configure_sudo
+configure_nas_shares
+install_docker
+install_keepass
+install_backup
 
-echo "Manage sudo rights for seb user"
-[ -f /etc/sudoers.d/seb ] || echo "seb ALL=(ALL) NOPASSWD:ALL" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/seb')
+
+### End Common config ###
+
+
+
+### Galaxy config - main laptop ###
+if [ ${GALAXY_INSTALL} == "1" ]; then
+    /usr/bin/bash $(dirname $0)/user_mgmt/create_user.sh
+    install_chrome
+    install_vlc
+
+    # Should go to Raspberry but dropbox not supported for the moment
+    install_msmtp
+    install_import_photos
+    install_kids_game_timer
+
+fi
+
+### Kids latpop config ###
+
+
+
+### PI400 seedbox / mediacenter on Raspberry ###
+if [ ${PI400_INSTALL} == "1" ]; then    
+    install_transmission
+    install_kodi
+
+    # install_xrdp
+fi
+
+
+### Gaming Host ??? ####
+
+
+exit 0
+
+
 
 
 echo "install Vscode"
 sudo snap install code --classic
+    # TODO manage extensions
+        # Shell outline
+        # python
+        # remote ssh
 
-# TODO open current folder in VScode with accepting / trusting 
 
-echo "Install VLC client"
-sudo snap install vlc
-
-echo "Install Google chrome"
-[ -f /usr/bin/google-chrome ] || wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    sudo dpkg -i ./google-chrome*.deb && \
-    rm ./google-chrome*.deb
 
 echo "Install and setup access_service"
 
@@ -49,13 +85,7 @@ sudo systemctl enable access_service
 sudo systemctl restart access_service
 sudo systemctl status access_service --no-pager
 
-echo "Install kids_game_timer service"
 
-sudo cp kids_game_service/kids_game_timer.sh /usr/bin/kids_game_timer.sh
-sudo cp kids_game_service/kids_game_timer.service /etc/systemd/system/kids_game_timer.service
-sudo systemctl enable kids_game_timer
-sudo systemctl restart kids_game_timer
-sudo systemctl status kids_game_timer --no-pager
 
 
 echo "Install and setup Squid Proxy + config users"
@@ -88,14 +118,15 @@ sudo snap install curl
 systemctl is-enabled squid
 
 
-# TODOO - only once for tte squid.conf.roig (if already exists don't do it again)
+# TODO - only once for the squid.conf.orig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
 echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.co\.nminiroyale.io' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
 sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
 sudo systemctl reload squid
-# sudo chmod 666 /var/log/squid/squidGuard.log 
+# TODO squidGuard.log may not exist at the begining maybe let-s create it if not exists
+# sudo chmod 666 /var/log/squid/squidGuard.log
 
 # https_proxy=http://localhost:3128 curl https://www.google.fr
 # # cat /var/log/squidguard/suidgard.log
@@ -106,8 +137,7 @@ sudo systemctl reload squid
 # https://michauko.org/blog/squidguard-filtre-durl-et-listes-a-jour-le-plus-dur-313/
 
 
-# CHROMIUM
-# https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L111
+
 
 echo "Configure proxy in GNOME for users through setting an autostart script"
 
@@ -135,60 +165,7 @@ echo "set automount at startup fetaures"
 # Note the very interesting usage of credentials file to avoid putting everything in the fstab file
 
 
-sudo apt-get install -y cifs-utils
-# Create a smb credentials file with limited access
-cat <<EOF > /var/tmp/.doux.smb.credentials
-username=${DOUX_SMB_USERNAME}
-password=${DOUX_SMB_PASSWORD}
-EOF
-cat <<EOF > /var/tmp/.famille.smb.credentials
-username=${FAMILLE_SMB_USERNAME}
-password=${FAMILLE_SMB_PASSWORD}
-EOF
-cat <<EOF > /var/tmp/.douce.smb.credentials
-username=${DOUCE_SMB_USERNAME}
-password=${DOUCE_SMB_PASSWORD}
-EOF
-cat <<EOF > /var/tmp/.bestphotos.smb.credentials
-username=${BEST_SMB_USERNAME}
-password=${BEST_SMB_PASSWORD}
-EOF
-sudo mv /var/tmp/.doux.smb.credentials /etc/.doux.smb.credentials
-sudo chmod 600 /etc/.doux.smb.credentials
-sudo chown root:root /etc/.doux.smb.credentials
-sudo mv /var/tmp/.famille.smb.credentials /etc/.famille.smb.credentials
-sudo chmod 600 /etc/.famille.smb.credentials
-sudo chown root:root /etc/.famille.smb.credentials
-sudo mv /var/tmp/.douce.smb.credentials /etc/.douce.smb.credentials
-sudo chmod 600 /etc/.douce.smb.credentials
-sudo chown root:root /etc/.douce.smb.credentials
-sudo mv /var/tmp/.bestphotos.smb.credentials /etc/.bestphotos.smb.credentials
-sudo chmod 600 /etc/.bestphotos.smb.credentials
-sudo chown root:root /etc/.bestphotos.smb.credentials
 
-
-sudo mkdir -p /mnt/films
-grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/nas/doux
-grep -qF '/mnt/nas/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/nas/douce
-grep -qF '/mnt/nas/douce' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/douce cifs credentials=/etc/.douce.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/nas/bestphotos
-grep -qF '/mnt/nas/bestphotos' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/bestphotos cifs credentials=/etc/.bestphotos.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/nas/famille
-grep -qF '/mnt/nas/famille' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/famille cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-# sudo mkdir -p /mnt/theo_home_dir
-sudo mkdir -p /home/theo/network_share
-grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo/network_share cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
-# sudo mkdir -p /mnt/leo_home_dir
-# grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/triphotos
-grep -qF '/mnt/triphotos' /etc/fstab || echo "//local.nas.multiseb.com/home/Drive/Moments /mnt/triphotos cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-sudo mkdir -p /mnt/backup
-grep -qF '/mnt/backup' /etc/fstab || echo "//local.nas.multiseb.com/home/ubuntu_backups /mnt/backup cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-
-
-sudo mount -a
 
 
 echo "LAPTOP only - Disable the touch screen ???"
@@ -232,65 +209,6 @@ sudo cp /var/tmp/seb.gnome-network-displays.desktop /usr/share/applications/
 # https://askubuntu.com/questions/819199/how-do-i-share-my-screen-to-airplay-appletv
 
 
-echo "DESKTOP only - install docker and transmission configuration (not on laptop)"
-
-if [ ${DESKTOP_INSTALL} == "1" ]; then
-    sudo snap install docker
-    sudo groupadd docker
-    # sudo usermod -aG docker seb
-    sudo gpasswd -a seb docker 
-    sudo chmod 666 /var/run/docker.sock
-
-    docker run --cap-add=NET_ADMIN -d \
-    --restart unless-stopped \
-    --mount type=bind,source=/mnt/films/seedbox,target=/data \
-    --mount type=bind,source=/mnt/films/seedbox/config,target=/config \
-    --mount type=bind,source=/mnt/films/seedbox/ubuntu_seedbox_openvpn,target=/etc/openvpn/custom/ \
-    -e OPENVPN_PROVIDER=custom \
-    -e OPENVPN_CONFIG=openvpn \
-    -e OPENVPN_USERNAME=5DRFhMFyXF \
-    -e OPENVPN_PASSWORD=3tnyyYCf3Q \
-    -e DEBUG=true \
-    -p 9999:9091 \
-    -e LOCAL_NETWORK=192.168.0.0/16 \
-    --log-driver json-file \
-    --log-opt max-size=10m \
-    --name transmission-openvpn \
-    haugene/transmission-openvpn
-
-
-    docker run -d \
-      --restart unless-stopped \
-      --link transmission-openvpn:transmission \
-      -p 8080:8080 \
-      --name transmission-openvpn-proxy \
-      haugene/transmission-openvpn-proxy  
-
-
-fi
-
-
-
-echo "DESKTOP only - install KODI and configuration on NAS (not on laptop)"
-
-if [ ${DESKTOP_INSTALL} == "1" ]; then
-    sudo apt install -y kodi
-    # TODO for each user 
-    mkdir -p /home/seb/.kodi
-    # fstab line with uid / gid
-    grep -qF '/home/seb/.kodi' /etc/fstab || echo "//local.nas.multiseb.com/home/films/kodi_datas /home/seb/.kodi cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb) 0 0" | sudo tee -a /etc/fstab > /dev/null
-    # https://kodi.wiki/view/Kodi_data_folder
-fi
-
-
-echo "Install Keepass and launch with a shared DB on NAS"
-sudo apt install -y keepassxc
-    # TODO add keepass to favorites in GNOME
-    # TODO need an rsync with google drive
-
-    # Keepass is ubuntu_keepass in /mnt/doux
-    # https://www.padok.fr/en/blog/ssh-keys-keepassxc
-
 if [ ${DESKTOP_INSTALL} == "1" ]; then
     echo "Install SSH"
     # Only available through locla network as firewaal on freebox do not forward port
@@ -317,22 +235,13 @@ sudo apt install -y remmina remmina-plugin-rdp remmina-plugin-secret
 # TODO debug RDP isntll for desktop
 # https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 
-if [ ${DESKTOP_INSTALL} == "1" ]; then
 
-    echo "install XRDP"
-
-    sudo apt install xrdp -y
-    sudo systemctl enable xrdp
-    # sudo usermod -a -G ssl-cert xrdp
-    sudo systemctl restart xrdp
-fi
 
 
 if [ ${GALAXY_INSTALL} == "1" ]; then
 
     echo "install Gthumb and Geeqie"
-    sudo apt install -y gthumb geeqie
-    sudo apt install -y exiftool
+    sudo apt install -y gthumb geeqie exiftool
 
     # TODO add gthumb in favorites in GNOME
     # TODO manage rating shortcuts with custom actions laucnhing exiftool script
@@ -377,11 +286,6 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     gsettings set org.gnome.shell favorite-apps "${APP_LIST}"
 
 
-    # echo "installing gmail desktop app"
-    # sudo snap install gmail-desktop
-    # TODO test thunderbird ?
-    sudo snap remove -y gmail-desktop
-
     sudo snap install gnome-contacts
     # TODO manage synchronisation ??
 
@@ -389,38 +293,6 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     sudo snap connect audacity:alsa
 
     sudo snap install teams-for-linux
-
-    echo "INstalling import photos scripts"
-
-    sudo apt-get -y install msmtp
-    envsubst < import_photos/msmtp.conf > /var/tmp/msmtp.conf.subst
-    sudo mv /var/tmp/msmtp.conf.subst /etc/msmtprc
-    sudo chown root:root /etc/msmtprc
-    sudo chmod 600 /etc/msmtprc
-
-    sudo apt-get -y install fdupes
-
-    sudo cp import_photos/import-photos.sh  /usr/local/bin/import-photos.sh
-    sudo chmod +x /usr/local/bin/import-photos.sh
-    sudo cp import_photos/import-photos-mail.sh  /usr/local/bin/import-photos-mail.sh
-    sudo chmod +x /usr/local/bin/import-photos-mail.sh
-    sudo cp import_photos/import-photos-rating-dispatch.sh  /usr/local/bin/import-photos-rating-dispatch.sh
-    sudo chmod +x /usr/local/bin/import-photos-rating-dispatch.sh
-
-    sudo cp import_photos/systemd.service /etc/systemd/system/import-photo-mail.service
-    sudo cp import_photos/systemd.timer /etc/systemd/system/import-photo-mail.timer
-    sudo systemctl enable import-photo-mail.service
-    sudo systemctl start import-photo-mail.service
-    sudo systemctl enable import-photo-mail.timer
-    sudo systemctl start import-photo-mail.timer
-
-    # sudo systemctl daemon-reload
-    # sudo systemctl restart import-photo-mail.timer
-    # sudo systemctl restart import-photo-mail.service
-
-
-    sudo grep -qF 'import-photos-mail.sh' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/import-photos-mail.sh") | crontab -
-    sudo grep -qF 'reboot' /var/spool/cron/crontabs/seb || (crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/import-photos-mail.sh") | crontab -
 
 
 
@@ -437,16 +309,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
 
 fi # GALAXY_INSTALL
 
-echo "installating backup service"
 
-sudo cp backups/backup.sh  /usr/local/bin/backup.sh
-sudo chmod +x /usr/local/bin/backup.sh
-sudo cp backups/systemd.service /etc/systemd/system/backup.service
-sudo cp backups/systemd.timer /etc/systemd/system/backup.timer
-sudo systemctl enable backup.service
-sudo systemctl start backup.service
-sudo systemctl enable backup.timer
-sudo systemctl start backup.timer
 
 
 echo "Installing xournal++ for pdf editing"

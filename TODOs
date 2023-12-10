@@ -27,6 +27,9 @@ Software and config after install
 - google account at ubuntu level ? (permit GNOME to access google)
 - setup google chrome synchronization
 
+-  CHROMIUM instead of chrome ??
+  - https://github.com/seb54000/tp-centralesupelec/blob/c0ca88e1cdf82e9479890e28f3b040baad10181f/tf-ami-vm/user_data_tpiac.sh#L111
+
 - limiter les programmes qui peuven t être lancés 
 
 - install Gdrive (done throughg gmail setup ?)
