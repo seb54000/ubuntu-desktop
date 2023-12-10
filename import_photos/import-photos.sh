@@ -150,6 +150,7 @@ for USER in CAR SEB ; do
 	# tail -n2 permet d'enlever la première ligne du résultat de ls, -tu permet de trier suivant la date d'accès, xargs "FILE" avec les doubles quotes permet de gérer les espaces dans les résultats de ls
 	#https://www.unixtutorial.org/2008/04/atime-ctime-mtime-in-unix-filesystems/
 	mkdir -p "${PHOTOS_VIDEOS_SOURCE_TEMP_DIR}"
+	chown seb:seb "${PHOTOS_VIDEOS_SOURCE_TEMP_DIR}"
 	cd "${PHOTOS_VIDEOS_SOURCE_DIR}"
 	ls -tu "${PHOTOS_VIDEOS_SOURCE_DIR}" | tail -n+2 | xargs -I FILE mv "FILE" "${PHOTOS_VIDEOS_SOURCE_TEMP_DIR}" 
 	echo "---- Move all files (except last one) from ${PHOTOS_VIDEOS_SOURCE_DIR} to ${PHOTOS_VIDEOS_SOURCE_TEMP_DIR} for User : $USER to avoid uncomplete write ----"

@@ -1,0 +1,8 @@
+[Unit]
+Description=Switch game access (windows gaming host) based on timer file
+
+[Service]
+ExecStart=/usr/bin/kids_game_timer.sh
+
+[Install]
+WantedBy=multi-user.target

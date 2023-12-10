@@ -49,6 +49,14 @@ sudo systemctl enable access_service
 sudo systemctl restart access_service
 sudo systemctl status access_service --no-pager
 
+echo "Install kids_game_timer service"
+
+sudo cp kids_game_service/kids_game_timer.sh /usr/bin/kids_game_timer.sh
+sudo cp kids_game_service/kids_game_timer.service /etc/systemd/system/kids_game_timer.service
+sudo systemctl enable kids_game_timer
+sudo systemctl restart kids_game_timer
+sudo systemctl status kids_game_timer --no-pager
+
 
 echo "Install and setup Squid Proxy + config users"
 # https://steelmon.wordpress.com/2010/12/09/setting-up-a-blacklist-proxy-with-automatic-updates-using-squid-and-squidguard/
