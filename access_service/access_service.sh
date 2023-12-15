@@ -29,6 +29,17 @@ log () {
     echo "$(date +%Y%m%d-%H%M%S) $1" >> /var/log/access_service.log
 }
 
+configure_english_only () {
+    echo -e 'http_access deny all' | sudo tee /etc/squid/conf.d/squid.denyall.conf > /dev/null
+    sudo systemctl reload squid
+}
+
+standard_squid_conf () {
+    if [ -f /etc/squid/conf.d/squid.denyall.conf ]; then
+        sudo rm /etc/squid/conf.d/squid.denyall.conf
+        sudo systemctl reload squid
+    fi
+}
 
 while true
 do
@@ -38,12 +49,18 @@ do
     if [ $? -eq 0 ]; then
         # log "Online, will check the dropbox value"
         CONTENT=$(curl -L "https://www.dropbox.com/scl/fi/plvgi8cqnmrl5sjxpw8pr/ubuntu-desktop.txt?rlkey=xu4ns2tn1j89d9147hjj5ei6o&dl=0")
-        if [ $CONTENT == "1" ]; then
-            log "Online, value=1, will allow access"
+        if [ ${CONTENT} == "1" ]; then
+            log "Online, value=${CONTENT}, will allow access"
+            standard_squid_conf
             allow_access theo
             allow_access leo
+        elif [ ${CONTENT} == "leo" ]; then
+            log "Online, value=${CONTENT}, will setup english_only mode"
+            allow_access leo
+            configure_english_only
+            remove_access theo            
         else
-            log "Online, value=0 or != from 1, will remove access and kill session if already started"
+            log "Online, value=${CONTENT} (0 or != from 1 and leo) , will remove access and kill session if already started"
             remove_access theo
             remove_access leo
         fi
