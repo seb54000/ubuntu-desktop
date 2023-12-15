@@ -120,7 +120,7 @@ systemctl is-enabled squid
 
 # TODO - only once for the squid.conf.orig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
-echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.co\.nminiroyale.io' | sudo tee /etc/squid/bad_urls.acl > /dev/null
+echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.com\n.miniroyale.io' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
 sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
