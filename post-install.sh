@@ -310,6 +310,12 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
 fi # GALAXY_INSTALL
 
 
+echo "INstalling python"
+sudo apt install -y python-pip python3.10-venv
+# TODO create as user seb a venv in $HOME/kodi-venv
+
+echo "Install tools to manage mkv files"
+sudo apt install -y mkvtoolnix
 
 
 echo "Installing xournal++ for pdf editing"
