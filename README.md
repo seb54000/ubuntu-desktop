@@ -1,6 +1,6 @@
 # ubuntu-desktop
 
-[[TOC]]
+[[_TOC_]]
 
 Files, scripts, and other stuff to fully manage my desktops
 

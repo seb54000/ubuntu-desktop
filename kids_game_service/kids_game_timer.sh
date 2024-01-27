@@ -6,18 +6,19 @@ authorized_file="/home/seb/Dropbox/KIDS/kids-account-config.txt"
 timestamp_file="/home/seb/Dropbox/KIDS/kids_game_timestamp.txt"
 
 
-# Check dropboxes are running (if not start them)
-ps -efw | grep -e \/seb\/.dropbox-dist | grep -v grep > /tmp/droptest
-grep -e dropbox-dist /tmp/droptest
-if [ "$?" -ne "0" ]; then
-	echo "Dropbox Seb is not running, start it"
-	set -e
-	/usr/bin/dropbox start > /dev/null
-	set +e
-	sleep 15
-fi
-sudo rm -f /tmp/droptest
-
+check_dropbox () {
+    # Check dropboxes are running (if not start them)
+    ps -efw | grep -e \/seb\/.dropbox-dist | grep -v grep > /tmp/droptest
+    grep -e dropbox-dist /tmp/droptest
+    if [ "$?" -ne "0" ]; then
+        echo "Dropbox Seb is not running, start it"
+        set -e
+        sudo -i -u seb /usr/bin/dropbox start 2&> /dev/null
+        set +e
+        sleep 15
+    fi
+    sudo rm -f /tmp/droptest
+}
 
 reset_remove () {
     echo "reset_remove() time is finished or timer has 0 value or timer contains not only numbers"
@@ -31,6 +32,8 @@ do
     # Lire le contenu du fichier /tmp/timer
     timer_value=$(cat "$timer_file")
     echo "debug timer_value is : $timer_value"
+
+    check_dropbox
 
     if [[ "$timer_value" == "M" ]]; then
     # Si timer_value contient M, on est en mode manuel donc on ne fait rien
@@ -63,6 +66,7 @@ do
                     reset_remove
                 else
                     echo "Time is still running, enjoy"
+                    echo "Remaining time is $((current_time - expiration_time)) s or $(( (current_time - expiration_time) / 60 )) mns"
                 fi
             else
                 # Le timer contient 0 on reset

@@ -39,11 +39,12 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     /usr/bin/bash $(dirname $0)/user_mgmt/create_user.sh
     install_chrome
     install_vlc
+    install_ledger
 
     # Should go to Raspberry but dropbox not supported for the moment
     install_msmtp
     install_import_photos
-    install_kids_game_timer
+    # install_kids_game_timer    # NOW done by powershell service
 
 fi
 
@@ -65,7 +66,11 @@ fi
 
 exit 0
 
-
+# TODO install terraform
+curl -o tf.zip https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
+unzip tf.zip
+rm tf.zip
+sudo mv terraform /usr/local/bin/terraform
 
 
 echo "install Vscode"
@@ -267,6 +272,8 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     #       </metadata>
     #     </info>
     #   </bookmark>
+
+    # TODO replace dropbox with maestral intall (see in TODO.md)
 
     echo "Install dropbox with double install"
     # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously

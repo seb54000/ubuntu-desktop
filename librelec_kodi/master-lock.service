@@ -1,0 +1,11 @@
+[Unit]
+Description=Manage master-lock service
+After=storage-films.mount
+
+[Service]
+User=root
+ExecStart=/storage/.config/master-lock.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

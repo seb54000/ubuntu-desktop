@@ -34,6 +34,8 @@ configure_english_only () {
     sudo systemctl reload squid
 }
 
+# TODO modify fstab when english only or create a movie profile that is in seb group and is activated based on dropbox value
+
 standard_squid_conf () {
     if [ -f /etc/squid/conf.d/squid.denyall.conf ]; then
         sudo rm /etc/squid/conf.d/squid.denyall.conf

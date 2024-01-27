@@ -154,11 +154,23 @@ Galaxy book
     - https://askubuntu.com/questions/1406999/i-cant-use-fingerprint-sensor-in-ubuntu-22-04
   - luminosité / brightness shorttcuts do not work
      - https://unix.stackexchange.com/questions/714196/oled-screen-brightness-doesnt-work-samsung-galaxy-book
+         Test avec gnome shelle extension : https://extensions.gnome.org/extension/1625/soft-brightness/
+         sudo apt install -y gnome-shell-extensions
+         ça marche sauf qu'ensuite la luminosité (au oins quand on utilise chrome) baisse toutes les x secondes, c'est très gênant
+            J'ai pourtant essayé de désactiver une extension chrome qui gère la luminosité / shades of orange (pour la lumière du soir et ud matin) mais ça semble continuer  (ça le fait aussi sur thunderbird ou vscode...) - je désactive l'extension pour le moment et il faudra tester la solution du grub
   - son sur les HP ne marche pas
+
+    https://github.com/joshuagrisham/galaxy-book2-pro-linux
+   apt-get install alsa-tools
+    curl -o /tmp/sound.sh https://raw.githubusercontent.com/joshuagrisham/galaxy-book2-pro-linux/main/sound/necessary-verbs.sh
+    chmod +x /tmp/sound.sh
+    /tmp/sound.sh
 
 
 VI key bindings for arrows
 
+
+Tri dans les keepass et sharing d'une partie des comptes avec d'autres keepass 
 
 Look on ubuntu integrated backup tool
    - at least see how to deactivate reminders 
@@ -181,3 +193,249 @@ rsync: [generator] mknod "/mnt/backup/backup_home/galaxy-doux/seb/.dropbox/.ifac
 
 Service to send recurring emails (with a cron job)
   -- pour se faire des rappels sur les déclartaions URSAFF
+   https://chromewebstore.google.com/detail/recurring-emails-for-gmai/nfkkaahokibjkbmoieakdcihjkifhfdo?pli=1
+
+
+
+
+
+
+Need to find a way to have cronjob running and seedbox and KODI
+   - one way is to use NAS
+   - other is to have a raspberry PI (could begin with the one dedicated for Repaix video games ?)
+      https://raspberrytips.fr/installer-ubuntu-desktop-raspberry-pi/#?utm_content=cmp-true
+      sudo apt install rpi-imager
+
+
+
+
+
+- Récupérer l'espace Time MAchine sur le NAS (HD externe dédié)
+   VOir aussi pour éventuellement y héberger un snapshot des documents_shared et autres éléments précieux
+
+
+
+Gonme extension pour relancer failcmeent les icons du tray qui disparaissent (comme dropbox notamment)
+à tester ?
+https://extensions.gnome.org/extension/2890/tray-icons-reloaded/
+   https://www.debugpoint.com/manual-installation-gnome-extension/
+
+
+Tri des cartes mémoires microSD pour test RAspeberry
+
+SanDISK 32 GB grise/rouge = carte utilisée par Théophile et qui a planté totues ses photos sur android
+      test de falsh image raspebrry n'a pas marché (est-ce parce que la carte est foutue ?)
+         le boot démarre, on a le splash screen ubuntu mais il se passe plus rien ensuite
+
+SanDISK 128 GB or/roge = carte utilisé dans le téléphone de Léonard (et a posé pb aussi)
+      Impossible de lire ou écrire sur la carte (semble foutue)
+         Une autre est en commande chez amazon pour faire un échange standard si elle marche plus
+
+San DISK 16 GB fournie avec rasperry (noire)
+      Je la reflashe avec ubuntu pour test
+         marche pas, pas de boot, refaire un test de flash
+      Un backup via DD de l'entiereté est dispo dans Downloads/rapseberry-inital.img
+
+
+Install dropbox client in shell mode only (needed for raspberry)
+   https://www.dropbox.com/install-linux
+   https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2023.09.06_amd64.deb
+   https://www.dropbox.com/download?dl=packages/dropbox.py
+
+
+Raspberry objectif :
+ - play easily video from NAS (KODI)
+ - backup / usage of all kodi or other config from NAS (to ease a future reinstall)
+ - Run cronjob like import-photos or kids game access (so we don't rely on an another running computer for these functions)
+ - Run docker and seedbox ? (enough power ?)
+ - fixer IP au nivveau google home WIFI
+ - Accès SSH et RDP
+ - choix de la distrib ? premiers tests avec ubuntu (car toutes lesfonctionnalités présentes)
+   - envisager LIBRELEC (KODI distrib) - mais est-ce qu'on peut facilement installer d'autres outils ? (docker, cronjobs, xRDP, ...)
+
+Real first tasks on raspberry
+   Maybe it is easier to do all of this from an already installed laptop (copy/paste the .env and the above is only needed for a complete bootstrap)
+      Publish the ssh key somewhere and just curl on it and verify that sshd is running ?system 
+         TODO configure sshd on pi400 to allow only keys (no password)
+
+ssh root@192.168.87.150
+   librelec
+curl -o /storage/.ssh/authorized_keys https://gist.githubusercontent.com/seb54000/9a112282dc69ba9e9248634deabaa0e0/raw/724f7291cc4c5ae77ab4bd71baee41469d99ebc8/ssh_public.txt
+
+
+On PI400
+   sudo apt install -y openssh-server curl git
+   curl -o /home/seb/.ssh/authorized_keys https://gist.githubusercontent.com/seb54000/9a112282dc69ba9e9248634deabaa0e0/raw/724f7291cc4c5ae77ab4bd71baee41469d99ebc8/ssh_public.txt
+
+
+Then from SSH
+
+ git clone
+ copy .env file
+   customize : PI400_INSTALL=1
+ connect to keepass or vault ? Where is it located to get the .env infos ?
+   What would be the easiest ? Keepass on NAS, dropbox, gmail/gdrive ?  (think outside of ubunut, NAS would be the easiest)
+      need to install mount utils, keepass 
+         We could do a specific mount command with password in it as we will umount in the end
+ create .env file (with SSH key)
+ Minimal script for raspberry with above + set NAS mounts
+
+ BIG trouble for cronjob and dropbox as dropbox is not released for ARM raspberry
+   Alternative are using a script uplaoder or rclone (both have big drawbacks)
+      https://www.reddit.com/r/Crostini/comments/iwvywv/dropbox_arm64_solution_for_any_users_in_the_same/
+      https://github.com/andreafabrizi/Dropbox-Uploader/
+      https://pimylifeup.com/raspberry-pi-dropbox/
+      https://linuxhint.com/install-use-dropbox-raspberry-pi/
+      https://github.com/dropbox/dropbox-sdk-python
+      https://www.instructables.com/Raspberry-Pi-Home-Monitoring-With-Dropbox/
+
+
+
+TODO create DNS records in OVH for all of our units (in repaix and in paris as different IP)
+ - setup Google WIFI in Paris and in Repaix with static lease (maintain a file with mac adress somewherre (in keepaas ?))
+ - create records like valois.galaxy.multiseb.com repaix.galaxy.multiseb.com  (evolutive to herold.galaxy.multiseb.com)
+      - or galaxy.valois.multiseb.com
+
+
+Pb with timer kids
+   il faut checker que dropbox est bien lancé à chaque fois mais le scripr pour le relancer devrait se faire en tant que seb
+   là il est peut-être lancé en tant que root et pas sûr que ça marche derrière à mettre à jour pour photos imports aussi du coup
+
+
+Docker on PI400, containers are not restarted...
+   en fait c'est simplement lié au fait que les mount de seedbox ne sont plus là car pas de VPN, donc il faut arriver à faire fonctionner le VPN
+
+TODO startup script fo PI400 when in Repaix
+   if WIFI SSID is repaix
+      start vpn openvpn --config file to config
+      restart mount.films systemd
+      restart docker if needed
+
+   
+
+TODO : how to automate the config for network wifi settings for SSID repaix
+   THrough the gui - launch "netxork connections" 
+      Details of WIFI connection repaix
+      General tab : check automatically connect to VPN
+
+      Problem when logging with another user - par exemple leo
+         il vaut peut être mieux faire carment une connexion VPN sans utiliser les outils UBunut (direct openVPN comme sur PI400)
+
+
+
+Uninstall dropbox CLI and use only Maestral : much better
+   https://github.com/SamSchott/maestral
+
+   python3 -m venv maestral-venv
+   source maestral-venv/bin/activate
+   python3 -m pip install --upgrade maestral
+
+   maestral start --config-name="carole" 
+
+   maestral config-files
+
+   maestral gui --config-name="carole" &
+   maestral gui --config-name="seb" &
+
+
+(maestral-venv) seb@galaxy-doux:~/ubuntu-desktop$ maestral status -c "seb"
+
+Account      sebastien.claude@multiseb.com (Basic)  
+Usage        38.9% of 5.2 GB used                   
+Status       Up to date                             
+Sync errors  0                                      
+
+(maestral-venv) seb@galaxy-doux:~/ubuntu-desktop$ maestral status -c "carole"
+
+Account      caroledropboxphotos@multiseb.com (Basic)  
+Usage        1.8% of 2.4 GB used                       
+Status       Up to date                                
+Sync errors  0  
+
+
+
+DNS records
+gaming.valois IN A 192.168.86.137
+samsung.valois IN A 192.168.86.248
+pi400.eth.valois IN A 192.168.86.150
+pi400.eth.repaix IN A 192.168.87.150
+pi400.repaix        IN CNAME     pi400.eth.repaix.multiseb.com.
+pi400.valois        IN CNAME     pi400.eth.valois.multiseb.com.
+
+CNAME for eth and wifi
+
+gaming.wifi.valois IN A 192.168.86.xxx
+gaming.eth.valois IN A 192.168.86.137
+gaming.valois IN CNAME gaming.eth.valois.multiseb.com.
+
+
+nslookup gaming.valois.multiseb.com
+
+
+
+
+
+
+=====================
+Fonctionalités souhaitées sur les différents PC
+- mode bureautique restreint 
+- mode bureautique étendu (accès internet standard)
+- mode multimedia english 
+- mode multimedia étendu
+- mode gaming
+- mode media on kodi
+
+Faut-il avoir deux comptes séparés pour leo et THeo dès maintenant ou un seul compte ?
+Faut-il pouvoir activer sur un PC particulier ou sur les deux ensembles (samsung et huawei)
+Le mode gaming et medai/kodi sont seulement sur les machines concernées
+
+Donc à priori 3 fichiers d'activation sur dropbox (voire 4 si on en a un par enfant pour bureautique)
+ - desktop.txt (ou desktop.leo.txt et desktop.theo.txt)
+ - gaming.txt
+ - kodi.txt (ou pi400.txt)
+
+COntenu du fichier :
+gaming ou kodi : soit "Y"/"y" , soit un entier entre 1 et 1000 , le reste signifie 0 (deactivate)
+desktop.txt : A-xxx"
+   - A peut prendre la valeur : E (extend / étendu) ou R (restrcted / restreint)
+   - xxx peut être soit "Y"/"y", soit un entier entre 1 et 1000
+   - tout ce qui ne respecte pas les conditions ci-dessus est considérés comme erreur et vaut NULL --> deactivate
+
+Une autre approche serait d'avoir un fichier dropbox pour desktop.restricted.txt et desktop.extended.txt
+Il n'y aurait pas de compte leo/theo mais un compte work (qui est le restricted et english) et un compte fun (extended qui inclut le mutimedia étendu)
+C'est aussi plus simple au niveau de la gestion des autorisations lors des mounts car on le fait par rapport aux users et du coup, le user work n'a jamais accès au NAS sauf pour son répertoire de travail stockage où on peut mettre un sous répertoire leo/theo
+
+Idéalement le compte work et english_only sont un peu différents car dans english_only on stop totalement INTERNET mais dans un premier temps c'est sans doute suffisant
+Il faut aussi voir comment stopper / désinstaller les jeux sur work
+
+
+
+
+
+
+
+
+
+
+Test maestral on pi400
+docker run -it -v /mnt/dropbox:/dropbox maestraldbx/maestral:latest ash
+   docker: no matching manifest for linux/arm/v8 in the manifest list entries.
+
+
+docker run --platform linux/arm64 -it -v /mnt/dropbox:/dropbox maestraldbx/maestral:latest ash
+
+https://www.reddit.com/r/docker/comments/165q3kq/raspberry_pi4_no_matching_manifest_for_linuxarmv8/
+https://www.linuxserver.io/blog/a-farewell-to-arm-hf
+LibreELEC:~ # uname -m
+aarch64
+
+
+https://discourse.osmc.tv/t/support-for-64bit-docker-containers/94286/17
+
+
+Bon il faut librelec 12 https://forum.libreelec.tv/thread/27772-any-date-yet-for-le12-on-rpi-4-and-5/
+EN attendant, c'est du 32 bis dans le userspace et donc les images docker non v8 ne marchent pas
+ça devrait sortir en Q1 2024 et sinon les nightly builds sont dispos donc on pourrait faire un test
+https://forum.libreelec.tv/thread/26789-can-t-pull-arm64-docker-image/
+
+

@@ -69,19 +69,19 @@ rsync -av --delete --exclude='*/.cache/' \
 if [ $? -eq 0 ]; then
     # Enregistrement de la date et de l'heure de la sauvegarde dans le journal
     echo "Sauvegarde effectuée le $(date)" >> $LOG_FILE
-
-    # Ecraser l'archive quotidienne si elle existe déjà
-    if [ "$ARCHIVE_EXISTS" = true ]; then
-        rm $ARCHIVE_FILE
-    fi
-
-    # Archiver la sauvegarde quotidienne dans l'historique
-    tar -czf $ARCHIVE_FILE -C $NAS_MOUNT $(basename $BACKUP_DIR)
 else
     # Enregistrement d'une erreur dans le journal
     echo "Erreur lors de l'exécution de rsync. Veuillez vérifier le journal." >> $LOG_FILE
     echo -e "Subject:WARNING : Backup failed at rsync step for $(hostname)\n\nReview the logs at $LOG_FILE for $(hostname)" | sudo msmtp seb54000@gmail.com
 fi
+
+# Ecraser l'archive quotidienne si elle existe déjà
+if [ "$ARCHIVE_EXISTS" = true ]; then
+    rm $ARCHIVE_FILE
+fi
+
+# Archiver la sauvegarde quotidienne dans l'historique
+tar -czf $ARCHIVE_FILE -C $NAS_MOUNT $(basename $BACKUP_DIR)
 
 # Supprimer les archives excédentaires (garder les 5 dernières)
 ARCHIVE_COUNT=$(ls -1 $HISTORY_DIR/$HISTORY_PREFIX* 2>/dev/null | wc -l)

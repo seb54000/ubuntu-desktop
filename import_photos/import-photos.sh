@@ -50,41 +50,45 @@ PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
 # https://gist.github.com/L422Y/8697518
 # sudo automount -vc pour prise en compte des changements
 
-# Check dropboxes are running (if not start them)
-ps -efw | grep -e \/seb\/.dropbox-dist | grep -v grep > /tmp/droptest
-grep -e dropbox-dist /tmp/droptest
-if [ "$?" -ne "0" ]; then
-	echo "Dropbox Seb is not running, start it"
-	set -e
-	/usr/bin/dropbox start > /dev/null
-	set +e
-	sleep 15
-fi
-sudo rm -f /tmp/droptest
+# # Check dropboxes are running (if not start them)
+# ps -efw | grep -e \/seb\/.dropbox-dist | grep -v grep > /tmp/droptest
+# grep -e dropbox-dist /tmp/droptest
+# if [ "$?" -ne "0" ]; then
+# 	echo "Dropbox Seb is not running, start it"
+# 	set -e
+# 	sudo -i -u seb /usr/bin/dropbox start 2&> /dev/null
+# 	set +e
+# 	sleep 15
+# fi
+# sudo rm -f /tmp/droptest
 
-ps -efw | grep -e dropbox-carole | grep -v grep > /tmp/droptest
-grep -e dropbox-carole /tmp/droptest
-if [ "$?" -ne "0" ]; then
-	echo "Actual HOME = $HOME"
-	ACTUAL_HOME=$HOME
-	echo "Dropbox Carole is not running, start it"
-	set -e
-	export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start > /dev/null
-	set +e
-	sleep 15
-	export HOME=$ACTUAL_HOME
-	echo "Restore actual HOME : $HOME"
-fi
-sudo rm -f /tmp/droptest
+# ps -efw | grep -e dropbox-carole | grep -v grep > /tmp/droptest
+# grep -e dropbox-carole /tmp/droptest
+# if [ "$?" -ne "0" ]; then
+# 	echo "Actual HOME = $HOME"
+# 	ACTUAL_HOME=$HOME
+# 	echo "Dropbox Carole is not running, start it"
+# 	set -e
+# 	sudo -i -u seb HOME="/home/seb/.dropbox-carole" /usr/bin/dropbox start 2&> /dev/null
+# 	set +e
+# 	sleep 15
+# 	export HOME=$ACTUAL_HOME
+# 	echo "Restore actual HOME : $HOME"
+# fi
+# sudo rm -f /tmp/droptest
+
+export PATH="/home/seb/ubuntu-desktop/maestral-venv/bin:$PATH"
+maestral status -c "seb"
 
 # Check if NAS is well mounted
-NAS_MOUNTED=$(mount | grep mnt/doux)
+NAS_MOUNTED=$(ls /mnt/doux)
 if [ $? -eq 0 ]; then
     echo "NAS mount is correctly mounted, let's continue the import"
 else
     echo -e "Subject:WARNING : import failed NAS NOT AVAILABLE, will try to mount everything"
 	sudo mount -a
-	NAS_MOUNTED=$(mount | grep mnt/doux)
+	sleep 5
+	NAS_MOUNTED=$(ls /mnt/doux)
 	if [ $? -eq 0 ]; then
 		echo "NAS mount is now OK, let's continue"
 	else
@@ -183,7 +187,7 @@ for USER in CAR SEB ; do
 	rmdir "${PHOTOS_VIDEOS_SOURCE_TEMP_DIR}" 
 	if [ "$?" -ne "0" ]; then
 		echo " WARNING : Des fichiers non pris en charge sont encore dans le répertoire ${PHOTOS_VIDEOS_SOURCE_TEMP_DIR} qui ne peut être supprimé, liste des fichiers ci-dessous"
-		echo " WARNING : Il peut s'agir parfois simplement de l'extension, on prend uniquement jpg|JPG|png|PNG|mov|MOV|mp'|MP4 (pas jpeg par exemple)"
+		echo " WARNING : Il peut s'agir parfois simplement de l'extension, on prend uniquement jpg|JPG|png|PNG|mov|MOV|mp4|MP4 (pas jpeg par exemple)"
 		echo ""
 		ls "${PHOTOS_VIDEOS_SOURCE_TEMP_DIR}" 
 		WARNING_ON_EXEC=1
@@ -212,7 +216,11 @@ for USER in CAR SEB ; do
 	cd "$VIDEOS_WORK_DIR"
 	# pour éviter une possible erreur : File format error - ./._20170902-175811-SEB-VID.MOV
 	# dot_clean -m .
-	# Remove this on ubuntu as ._ files are on MacOS only
+	# Removed this on ubuntu as ._ files are on MacOS only
+	echo "---- écriture de la date de création dans les données exif pour éviter les erreurs no writable tags set (uniquement pour les fichiers n'ayant pas encore de date) ----"
+	echo ""
+	exiftool -p '$filename|$createdate' -q -f . | awk -F "|" '{ if ($2 == "-") print $1}' | while IFS='' read -r filetoprocess || [[ -n "$filetoprocess" ]]; do exiftool "-CreateDate<FileModifyDate" "-timecreated<FileModifyDate" "-datecreated<FileModifyDate" "$filetoprocess"; done
+
 
 	echo "---- Rename des MOV et MP4 du user : $USER via exiftool dans le répertoire $VIDEOS_WORK_DIR ----" 
 	echo ""

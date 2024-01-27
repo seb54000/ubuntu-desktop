@@ -142,6 +142,7 @@ while ($true) {
                 activate
             }
             {$_ -ge 1 -and $_ -le 1000} {
+                activate
                 timer
             }
             default {
