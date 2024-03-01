@@ -41,6 +41,8 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     install_vlc
     install_ledger
 
+    install_maestral_service
+
     # Should go to Raspberry but dropbox not supported for the moment
     install_msmtp
     install_import_photos
@@ -125,7 +127,7 @@ systemctl is-enabled squid
 
 # TODO - only once for the squid.conf.orig (if already exists don't do it again)
 # sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.orig
-echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.com\n.miniroyale.io' | sudo tee /etc/squid/bad_urls.acl > /dev/null
+echo -e '.youtube.com\n.tiktok.com\n.scratch.mit.edu\n.mess.eu.org\n.buildnowgg.com\n.miniroyale.io\n.anime-sama.biz\n.anime-sama.vip\n.anime-sama.fr' | sudo tee /etc/squid/bad_urls.acl > /dev/null
 sudo cp squid/squid.conf /etc/squid/squid.conf
 sudo cp squid/error.html /etc/squid/error.html
 sudo cp squid/squid.custom.conf /etc/squid/conf.d/squid.custom.conf
@@ -278,7 +280,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     echo "Install dropbox with double install"
     # https://askubuntu.com/questions/475419/how-to-link-and-use-two-or-more-dropbox-accounts-simultaneously
     mkdir -p "$HOME"/.dropbox-carole
-    sudo apt install -y nautilus-dropbox
+    # sudo apt install -y nautilus-dropbox
         # The start of the second dropbox is done thrugh this command (laucnhed on a new terminal for frst configuration)
             # export HOME="/home/seb/.dropbox-carole" && /usr/bin/dropbox start -i
         # The import-photos.sh script will check that everythgin is started and restart

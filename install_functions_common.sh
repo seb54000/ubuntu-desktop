@@ -93,7 +93,7 @@ EOF
     sudo mkdir -p /mnt/films
     sudo chown seb:seb /mnt/films
     sudo chmod 750 /mnt/films
-    grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/films' /etc/fstab || echo "//local.nas.multiseb.com/home/films /mnt/films cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/english_only
     sudo chown seb:seb /mnt/english_only
     sudo chmod 755 /mnt/english_only
@@ -101,34 +101,34 @@ EOF
     sudo mkdir -p /mnt/nas/doux
     sudo chown seb:seb /mnt/doux
     sudo chmod 750 /mnt/doux
-    grep -qF '/mnt/nas/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/nas/doux' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/doux cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/nas/douce
     sudo chown seb:seb /mnt/nas/douce
     sudo chmod 750 /mnt/nas/douce
-    grep -qF '/mnt/nas/douce' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/douce cifs credentials=/etc/.douce.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/nas/douce' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/douce cifs credentials=/etc/.douce.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/nas/bestphotos
     sudo chown seb:seb /mnt/nas/bestphotos
     sudo chmod 750 /mnt/nas/bestphotos
-    grep -qF '/mnt/nas/bestphotos' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/bestphotos cifs credentials=/etc/.bestphotos.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/nas/bestphotos' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/bestphotos cifs credentials=/etc/.bestphotos.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0755,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/nas/famille
     sudo chown seb:seb /mnt/nas/famille
     sudo chmod 750 /mnt/nas/famille
-    grep -qF '/mnt/nas/famille' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/famille cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/nas/famille' /etc/fstab || echo "//local.nas.multiseb.com/home /mnt/nas/famille cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     # sudo mkdir -p /mnt/theo_home_dir
     sudo mkdir -p /home/theo/network_share
     sudo chown theo:theo /home/theo/network_share
     sudo chmod 750 /home/theo/network_share
-    grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo/network_share cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF 'theo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/theo_home_dir /home/theo/network_share cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u theo),gid=$(id -g theo),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     # sudo mkdir -p /mnt/leo_home_dir
     # grep -qF 'leo_home_dir' /etc/fstab || echo "//local.nas.multiseb.com/home/leo_home_dir /home/leo cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u leo),gid=$(id -g leo),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/triphotos
     sudo chown seb:seb /mnt/triphotos
     sudo chmod 750 /mnt/triphotos
-    grep -qF '/mnt/triphotos' /etc/fstab || echo "//local.nas.multiseb.com/home/Drive/Moments /mnt/triphotos cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/triphotos' /etc/fstab || echo "//local.nas.multiseb.com/home/Drive/Moments /mnt/triphotos cifs credentials=/etc/.famille.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
     sudo mkdir -p /mnt/backup
     sudo chown seb:seb /mnt/backup
     sudo chmod 750 /mnt/backup
-    grep -qF '/mnt/backup' /etc/fstab || echo "//local.nas.multiseb.com/home/ubuntu_backups /mnt/backup cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750 0 0" | sudo tee -a /etc/fstab > /dev/null
+    grep -qF '/mnt/backup' /etc/fstab || echo "//local.nas.multiseb.com/home/ubuntu_backups /mnt/backup cifs credentials=/etc/.doux.smb.credentials,iocharset=utf8,uid=$(id -u seb),gid=$(id -g seb),dir_mode=0750,nounix 0 0" | sudo tee -a /etc/fstab > /dev/null
 
     sudo mount -a
 }

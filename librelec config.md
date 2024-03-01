@@ -119,6 +119,29 @@ Set custom service
 https://kodi.wiki/view/HOW-TO:Remotely_update_library
     INteresting script to tests to automacially update/follow folder events
     https://forum.libreelec.tv/thread/23624-automatic-cleaning-library-on-all-players/
+TO BE TESTED TODO
+
+```bash
+#!/bin/sh
+monitor() {
+/storage/.kodi/addons/virtual.system-tools/bin/inotifywait -m -r -e close_write,delete --format "%e %T %w%f" --fromfile /path/to/your/file/with/movie_paths --timefmt "%d_%b_%Y_%T_%Z" --exclude '(\.jpg|\.nfo|\.edl|\.removing|\.logo.txt)' |
+while read event datetime watched_filename; do
+      if [[ $event = "CLOSE_WRITE,CLOSE" ]]; then            
+      kodi-send --host=box_a.xxx.x.xxx --port=xxxx --action="UpdateLibrary"
+      kodi-send --host=box_b.xxx.x.xxx --port=xxxx --action="UpdateLibrary"
+      kodi-send --host=box_c.xxx.x.xxx --port=xxxx --action="UpdateLibrary"
+      etc..
+      etc..
+      elif [[ $event = "DELETE" ]]; then      
+      kodi-send --host=boxa.xxx.x.xxx --port=xxxx --action="CleanLibrary"
+      kodi-send --host=boxa.xxx.x.xxx --port=xxxx --action="CleanLibrary"
+      kodi-send --host=boxa.xxx.x.xxx --port=xxxx --action="CleanLibrary"
+      etc...
+     fi
+done
+}
+monitor &
+```
 
 
 Hosting shared library with MySQL https://kodi.wiki/view/MySQL/Setting_up_Kodi
@@ -199,4 +222,75 @@ Connector 1 (42) HDMI-A-2 (connected)
     Crtc 4 (107) 1920x1080@60.00 148.500 1920/88/44/148/+ 1080/4/5/36/+ 60 (60.00) P|D 
       Plane 6 (119) fb-id: 342 (crtcs: 0 1 2 3 4 5) 0,0 1920x1080 -> 0,0 1920x1080 (XR24 AR24 AB24 XB24 RG16 BG16 AR15 XR15 RG24 BG24 YU16 YV16 YU24 YV24 YU12 YV12 NV12 NV21 NV16 NV61 P030 XR30 AR30 AB30 XB30 RGB8 BGR8 XR12 AR12 XB12 AB12 BX12 BA12 RX12 RA12)
         FB 342 1920x1080 XR24
+
+
+## SSH movie DB queries
+
+
+https://gist.github.com/magnetikonline/710e07d65c5495a24ca948595ed3f137
+
+```bash
+sqlite3  ~/.kodi/userdata/Database/MyVideos121.db
+
+.tables
+
+select * from movie;
+select * from files;
+
+select * from files where strFilename LIKE '%war%';
+select * from files where strFilename LIKE '%gam%';
+
+# here we can use the playCount to update all the files
+
+pragma table_info(movie);
+pragma table_info(files);
+```
+
+Add manually items to avoid entire scanning
+https://forum.kodi.tv/showthread.php?tid=361774
+
+Add on -but just timer / cronjob)
+https://github.com/robweber/xbmclibraryautoupdate
+https://kodi.wiki/view/Add-on:Library_Auto_Update
+
+https://github.com/Radarr/Radarr/issues/2070
+
+
+ALso envisage only to reference /storage/films in the videos sections where you can just browse the files
+
+
+## Problem with wiat for network config
+
+cat /usr/lib/systemd/system/kodi-waitonnetwork.service
+
+Play with this file to lower the wait time ? /storage/.cache/libreelec/network_wait
+
+cat /usr/lib/systemd/system/network-online.service - here we have the wait command
+/usr/sbin/connmand-wait-online --timeout=30
+
+ connmanctl state
+These commands semmes to work fine, the pb is to understand why sometimes system seems to be stuck at waiting (timeout is 30 seconds and the command will then exit)
+LibreELEC:~ # connmand-wait-online -i eth3 --timeout=5
+LibreELEC:~ # echo $?
+110
+LibreELEC:~ # connmand-wait-online  --timeout=5
+LibreELEC:~ # echo $?
+0
+
+
+WHile stuck for the HDMI but SSH is working
+journalctl -u connman
+journalctl -u network-online
+WHen working second line should be
+Feb 16 18:10:58 LibreELEC systemd[1]: Starting network-online.service...
+Feb 16 18:11:08 LibreELEC systemd[1]: Finished network-online.service.
+
+On voit qu'il y a aussi une autre dépendance
+cat /usr/lib/systemd/system/network-online.target.wants/kodi-waitonnetwork.service 
+EnvironmentFile=/storage/.cache/libreelec/network_wait
+ExecStart=/usr/bin/wait-time-sync --timeout ${WAIT_NETWORK_TIME}
+
+journalctl -u kodi-waitonnetwork
+Feb 16 18:10:58 LibreELEC systemd[1]: Starting kodi-waitonnetwork.service...
+Feb 02 21:49:47 LibreELEC systemd[1]: Finished kodi-waitonnetwork.service.
 
