@@ -41,7 +41,7 @@ if [ ${GALAXY_INSTALL} == "1" ]; then
     install_vlc
     install_ledger
 
-    install_maestral_service
+    # install_maestral_service
 
     # Should go to Raspberry but dropbox not supported for the moment
     install_msmtp

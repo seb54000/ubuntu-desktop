@@ -5,40 +5,42 @@ install_vlc () {
     sudo snap install vlc
 }
 
-install_maestral_service () {
+# install_maestral_service () {
 
-# TODO manage maestral install and venv creation (only if not existing)
-# Just look at TODOs md file
+# # TODO manage maestral install and venv creation (only if not existing)
+# # Just look at TODOs md file
 
-# (maestral-venv) seb@galaxy-doux:~/ubuntu-desktop$ maestral config-files
-# Config name  Account                           Path                                   
-# carole       caroledropboxphotos@multiseb.com  /home/seb/.config/maestral/carole.ini  
-# seb          sebastien.claude@multiseb.com     /home/seb/.config/maestral/seb.ini   
+# # (maestral-venv) seb@galaxy-doux:~/ubuntu-desktop$ maestral config-files
+# # Config name  Account                           Path                                   
+# # carole       caroledropboxphotos@multiseb.com  /home/seb/.config/maestral/carole.ini  
+# # seb          sebastien.claude@multiseb.com     /home/seb/.config/maestral/seb.ini   
 
-# https://stackoverflow.com/questions/48195340/systemd-with-multiple-execstart
-    cat <<EOF > /var/tmp/maestral@.service
-    [Unit]
-    Description=maestral service %I
-    StartLimitIntervalSec=500
-    StartLimitBurst=5
+# # https://stackoverflow.com/questions/48195340/systemd-with-multiple-execstart
+#     cat <<EOF > /var/tmp/maestral@.service
+#     [Unit]
+#     Description=maestral service %I
+#     StartLimitIntervalSec=500
+#     StartLimitBurst=5
 
-    [Service]
-    Restart=on-failure
-    RestartSec=5s
-    User=seb
-    # WorkingDirectory=
-    ExecStart=/home/seb/ubuntu-desktop/maestral-venv/bin/python3 -m maestral start --config-name="%i"
+#     [Service]
+#     # Type=forking
+#     Type=notify
+#     Restart=on-failure
+#     RestartSec=5s
+#     User=seb
+#     # WorkingDirectory=
+#     ExecStart=/home/seb/ubuntu-desktop/maestral-venv/bin/python3 -m maestral start --config-name="%i"
 
-    [Install]
-    WantedBy=multi-user.target
-EOF
-    sudo mv /var/tmp/maestral@.service /etc/systemd/system/
-    sudo systemctl enable maestral@seb.service
-    sudo systemctl enable maestral@carole.service
-    sudo systemctl start maestral@seb.service
-    sudo systemctl start maestral@carole.service
+#     [Install]
+#     WantedBy=multi-user.target
+# EOF
+#     sudo mv /var/tmp/maestral@.service /etc/systemd/system/
+#     sudo systemctl enable maestral@seb.service
+#     sudo systemctl enable maestral@carole.service
+#     sudo systemctl start maestral@seb.service
+#     sudo systemctl start maestral@carole.service
 
-}
+# }
 
 install_chrome () {
     echo "Install Google chrome"

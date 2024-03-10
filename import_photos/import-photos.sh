@@ -82,9 +82,13 @@ PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
 ps -ef | grep -v grep | grep maestral | grep '("seb")'
 if [ "$?" -ne "0" ]; then
 	echo "Dropbox/Maestral Seb is not running, start it and relaunch script"
-	exit 1
+	# exit 1
 	# TODO find a way to relaunch maestral wiht venv and as user seb while being run with root
 	# sudo su - seb -c "PATH=\"/home/seb/ubuntu-desktop/maestral-venv/bin:\$PATH\" maestral status -c seb"
+	# sudo su - seb -c "/home/seb/ubuntu-desktop/maestral-venv/bin/python3 -m maestral start -v -c seb"
+	# sleep 5
+	# sudo su - seb -c "/home/seb/ubuntu-desktop/maestral-venv/bin/python3 -m maestral status -c seb"
+	exit 1
 fi
 
 ps -ef | grep -v grep | grep maestral | grep '("carole")'
